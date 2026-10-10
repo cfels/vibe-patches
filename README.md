@@ -43,7 +43,7 @@ All modifications made by Morphe, along with their dates, can be found in the Gi
 Here's what each patch does. The descriptions below also show up in Morphe Manager, so you'll see the same wording when choosing patches. For the technical details and what's been tested, see the [Yanosik notes](docs/yanosik.md).
 
 <!-- PATCHES_START -->
-> **[v1.46.0](https://github.com/MorpheApp/morphe-patches/releases/tag/v1.46.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;10 patches total
+> **[v1.46.0](https://github.com/cfels/vibe-patches/releases/tag/v1.46.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;10 patches total
 <details open>
 <summary>📦 Yanosik&nbsp;&nbsp;•&nbsp;&nbsp;5 patches</summary>
 <br>
