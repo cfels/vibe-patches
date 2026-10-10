@@ -8,7 +8,9 @@ Run `compile.bat` on Windows or `bash compile.sh` on Linux/macOS to build/test `
 
 For a repository source, save your chosen square PNG as **`patches-bundle.png`** in the repository root, beside `README.md` and `gradle.properties`. A 512×512 PNG is a reasonable size. The [official template](https://github.com/MorpheApp/morphe-patches-template#-getting-development-started) documents this filename as the custom bundle icon in Morphe Manager, replacing the repository owner's avatar.
 
-The image must be available in your own repository for a remote source to fetch it. Adding a PNG locally does not publish it. This checkout has not been published and no custom icon was supplied. A local `.mpp` import is a separate source mode; the template's repository PNG instructions do not establish embedded-icon support for local bundles.
+Your chosen image is now saved as `patches-bundle.png`: a 1200×1200 PNG converted from `patches.jpg`, with the original framing kept. To change it later, replace this PNG in the repository root.
+
+Commit and push `patches-bundle.png` to your repository's main branch so Morphe Manager can fetch it for the GitHub source. A local `.mpp` import is a separate source mode; the repository PNG is not embedded in the bundle. No patch rebuild is needed just to change this repository icon.
 
 To import the local build, open Morphe Manager → Sources → + → Local and select `vibe-patch-1.46.0.mpp` from Downloads. A local source has no automatic updates; replace/reimport it after rebuilding. Sources you add can also be renamed with their pencil action. See [Morphe's source documentation](https://github.com/MorpheApp/morphe-manager/blob/main/docs/patch-sources.md).
 
