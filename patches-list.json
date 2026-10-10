@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "1.46.0",
+  "version": "1.0.0",
   "patches": [
     {
       "name": "Change installer source",
@@ -109,8 +109,38 @@
       "options": []
     },
     {
+      "name": "Disable telemetry",
+      "description": "Stops Yanosik's usage analytics, ad statistics and location targeting, Wi-Fi/app scans, ProxiCloud tracking, Notinote sample uploads, Firebase analytics and crash uploads, and Facebook app events. Online navigation and account requests still send the data they need; this isn't an offline mode or a network-wide blocker.",
+      "default": true,
+      "category": null,
+      "dependencies": [
+        "BytecodePatch",
+        "ResourcePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "pl.neptis.yanosik.mobi.android",
+          "name": "Yanosik",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": null,
+          "signatures": null,
+          "targets": [
+            {
+              "version": "26.9.0",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 29,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Disable voice ads",
-      "description": "Mutes the sponsored voice ads so they don't interrupt your drive. You still get navigation directions and road warnings, with the same audio controls.",
+      "description": "Mutes sponsored voice ads and spoken ad campaigns so they don't interrupt your drive. You still get navigation directions and road warnings, with the same audio controls.",
       "default": true,
       "category": null,
       "dependencies": [
@@ -217,11 +247,12 @@
     },
     {
       "name": "Suppress Premium promotions",
-      "description": "Hides PRO promo cards and upgrade shortcuts, including the sidebar card, and closes the PRO page. Donation and voucher pages stay available.",
+      "description": "Replaces the home PRO shortcut with your Vibe Patched icon that does nothing when tapped. Hides PRO promo cards and the sidebar upgrade card, and closes the PRO page. Donation and voucher pages stay available.",
       "default": true,
       "category": null,
       "dependencies": [
-        "BytecodePatch"
+        "BytecodePatch",
+        "ResourcePatch"
       ],
       "compatiblePackages": [
         {

@@ -13,6 +13,7 @@ import app.morphe.patches.yanosik.ad.disableVoiceAdsPatch
 import app.morphe.patches.yanosik.ad.hideBannerAdsPatch
 import app.morphe.patches.yanosik.promotions.suppressPremiumPromotionsPatch
 import app.morphe.patches.yanosik.premium.overrideLocalProChecksPatch
+import app.morphe.patches.yanosik.privacy.disableTelemetryPatch
 import app.morphe.patches.yanosik.shared.PACKAGE_NAME
 import app.morphe.patches.yanosik.shared.VERSION_NAME
 import app.morphe.patches.yanosik.shared.requireReferenceVersion
@@ -32,6 +33,8 @@ import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.zip.ZipFile
 
+private object YanosikValidationAssets
+
 private val changedMethods = setOf(
     "Lss0;->b(Lgzc;)Z",
     "Lpl/neptis/features/adsbanners/banners/small/AdsSmallMainFragment;->onViewCreated(Landroid/view/View;Landroid/os/Bundle;)V",
@@ -43,15 +46,17 @@ private val changedMethods = setOf(
     "Lpl/neptis/yanosik/mobi/android/common/ui/activities/launcher/LauncherActivity;->x0(" +
         "Lpl/neptis/yanosik/mobi/android/common/ui/activities/launcher/LauncherActivity;JLdm3;)Ljava/lang/Object;",
     "Lzr;->R(Lsva;Lwq;Z)V",
+    ADVERTISING_CAMPAIGN_VOICE_METHOD,
     "Lo6f;->a(Lh9f;Llv7;Lu1c;ZLy93;II)V",
     "Lm1a;->i(Lb4f;Ly93;I)V",
+    "Lso8;->n(Ln8g;I)V",
     "Lpl/neptis/user/ui/premium/PremiumActivity;->onCreate(Landroid/os/Bundle;)V",
     "Lr5f;->b(Lr5f;Lcom/revenuecat/purchases/EntitlementInfos;)Lh6f;",
     "Lr5f;-><init>(Lkp3;Landroid/content/Context;)V",
     "Ll9f;-><init>(ZZLh9f;)V",
     "La6f;-><init>(Lh6f;ZZLh9f;)V",
     "Lpl/neptis/features/settings/AppPreferenceActivity;->setupNoAdvSection()V"
-)
+) + telemetryMethodDescriptors
 
 private fun descriptor(method: Method) =
     "${method.definingClass}->${method.name}(${method.parameterTypes.joinToString("")})${method.returnType}"
@@ -226,14 +231,15 @@ fun validateReferenceApk(apk: File, workspace: File) {
         originalDex.getEntry(name)!!.dexFile.classes.flatMap { it.methods }
     }.associateBy(::descriptor)
     check(changedMethods.all { it in originals }) { "Missing Yanosik reference methods" }
+    verifyVoiceAdvertisingRoutes(originals.values)
 
     val slots = originalDex.dexEntryNames.flatMap { name ->
         originalDex.getEntry(name)!!.dexFile.classes.filter { it.type == "Li9f;" }
             .flatMap { it.fields }.filter { it.type == "Li9f;" }.map { it.name }
     }.toSet()
     val patches = setOf(suppressPremiumPromotionsPatch, hideBannerAdsPatch,
-        disableStartupCampaignsPatch, disableVoiceAdsPatch, overrideLocalProChecksPatch)
-    check(patches.map { it.name }.distinct().size == 5)
+        disableStartupCampaignsPatch, disableVoiceAdsPatch, overrideLocalProChecksPatch, disableTelemetryPatch)
+    check(patches.map { it.name }.distinct().size == 6)
     check(patches.all { patch ->
         patch.compatibility!!.single().let {
             it.packageName == PACKAGE_NAME && it.targets.single().version == VERSION_NAME
@@ -249,6 +255,21 @@ fun validateReferenceApk(apk: File, workspace: File) {
             }
         }
         val result = patcher.get()
+        // Preserve the compiled resource APK for independent binary-manifest
+        // inspection. Telemetry is the first Yanosik patch that edits resources.
+        val resourcesApk = requireNotNull(requireNotNull(result.resources).resourcesApk)
+        resourcesApk.copyTo(File(workspace, "validated-resources.apk"), overwrite = true)
+        verifyTelemetryManifest(apk, resourcesApk)
+        ZipFile(resourcesApk).use { zip ->
+            val entries = zip.entries().asSequence().filter { it.name.endsWith("/vibe_patched.png") }.toList()
+            check(entries.size == 1) { "Missing or duplicate compiled Vibe Patched icon" }
+            val icon = checkNotNull(YanosikValidationAssets::class.java.getResourceAsStream("/yanosik/vibe_patched.png"))
+                .use { it.readBytes() }
+            check(zip.getInputStream(entries.single()).use { it.readBytes() }.contentEquals(icon)) {
+                "Compiled Vibe Patched icon differs from the bundled asset"
+            }
+            println("PASS compiled Vibe Patched drawable")
+        }
         val changed = mutableSetOf<String>()
         var untouched = 0
         for (output in result.dexFiles) {
@@ -263,6 +284,10 @@ fun validateReferenceApk(apk: File, workspace: File) {
                     changed += key
                     val ops = instructions(method)
                     when {
+                        key == "Lso8;->n(Ln8g;I)V" -> verifyHomePatchedTileGuard(method, original)
+                        key == "Lzr;->R(Lsva;Lwq;Z)V" || key == ADVERTISING_CAMPAIGN_VOICE_METHOD ->
+                            verifyVoiceAdsMethod(method, original)
+                        key in telemetryMethodDescriptors -> verifyTelemetryMethod(method, original)
                         key.contains("/premium/PremiumActivity;->onCreate") -> {
                             check(semanticOutline(method).take(2) == semanticOutline(original).take(2))
                             verifyPremiumScreenControlFlow(method)
@@ -348,7 +373,7 @@ fun validateReferenceApk(apk: File, workspace: File) {
                                 (ops[1] as OneRegisterInstruction).registerA)
                             check(semanticOutline(method).drop(2) == semanticOutline(original))
                         }
-                        key.endsWith("->refresh()V") || key.startsWith("Lzr;") ||
+                        key.endsWith("->refresh()V") ||
                             key.startsWith("La5b;") || key.startsWith("Ln1a;") || key.startsWith("Lnhc;") ||
                             key.startsWith("Lm1a;") -> {
                             check(ops.first().opcode == Opcode.RETURN_VOID)

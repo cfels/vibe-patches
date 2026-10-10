@@ -45,15 +45,15 @@ for patch in data['patches']:
             assert [t['version'] for t in target['targets']] == ['26.9.0']
             assert target['targets'][0]['minSdk'] == 29
 names = [p['name'] for p in yanosik]
-assert len(names) == len(set(names)) == 5, f'Unexpected Yanosik index: {names}'
+assert len(names) == len(set(names)) == 6, f'Unexpected Yanosik index: {names}'
 assert set(names) == {'Hide banner ads', 'Disable startup ad campaigns',
                       'Disable voice ads', 'Suppress Premium promotions',
-                      'Override local PRO checks'}
+                          'Override local PRO checks', 'Disable telemetry'}
 declared = []
 for path in (SOURCE/'yanosik').rglob('*.kt'):
     declared.extend(re.findall(r'bytecodePatch\(\s*name = "([^"]+)"', path.read_text()))
 assert sorted(names) == sorted(declared), 'Index/source names differ'
 assert not any(path.name == 'reddit' for path in (ROOT/'patches/src/main/resources').rglob('*'))
-assert len(data['patches']) == 10
+assert len(data['patches']) == 11
 assert len([p for p in data['patches'] if not p.get('compatiblePackages')]) == 5
 print(f'PASS migration structure: {len(data["patches"])} indexed patches; {xml_count} XML files')

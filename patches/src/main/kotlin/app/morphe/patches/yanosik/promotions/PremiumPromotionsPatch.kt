@@ -115,12 +115,14 @@ internal const val PREMIUM_PROMOTION_GUARD = """
 @Suppress("unused")
 val suppressPremiumPromotionsPatch = bytecodePatch(
     name = "Suppress Premium promotions",
-    description = "Hides PRO promo cards and upgrade shortcuts, including the sidebar card, " +
-        "and closes the PRO page. Donation and voucher pages stay available."
+    description = "Replaces the home PRO shortcut with your Vibe Patched icon that does nothing when tapped. " +
+        "Hides PRO promo cards and the sidebar upgrade card, and closes the PRO page. " +
+        "Donation and voucher pages stay available."
 ) {
     compatibleWith(COMPATIBILITY_YANOSIK)
-    dependsOn(referenceVersionPatch)
+    dependsOn(referenceVersionPatch, homePatchedTileResourcesPatch)
     execute {
+        val homeTile = HomePatchedTileFingerprint.method
         val sidebar = SidebarPremiumCardFingerprint.method
         val activity = PremiumActivityFingerprint.method
         if (sidebar.implementation!!.registerCount != 24 || activity.implementation!!.registerCount != 11 ||
@@ -151,5 +153,6 @@ val suppressPremiumPromotionsPatch = bytecodePatch(
         card.addInstructionsWithLabels(0, PREMIUM_PROMOTION_CARD_GUARD)
         sidebar.addInstructions(0, "return-void")
         activity.addInstructionsWithLabels(2, PREMIUM_SCREEN_GUARD)
+        replaceHomeProTile(homeTile)
     }
 }

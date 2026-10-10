@@ -2155,9 +2155,18 @@
     "patches/src/main/kotlin/app/morphe/patches/yanosik/ad/DisableVoiceAdsPatch.kt",
     "patches/src/main/kotlin/app/morphe/patches/yanosik/ad/HideBannerAdsPatch.kt",
     "patches/src/main/kotlin/app/morphe/patches/yanosik/premium/LocalProPatch.kt",
+    "patches/src/main/kotlin/app/morphe/patches/yanosik/privacy/DisableTelemetryPatch.kt",
+    "patches/src/main/kotlin/app/morphe/patches/yanosik/privacy/TelemetryResourcesPatch.kt",
+    "patches/src/main/kotlin/app/morphe/patches/yanosik/promotions/HomePatchedTile.kt",
+    "patches/src/main/kotlin/app/morphe/patches/yanosik/promotions/HomePatchedTileResources.kt",
     "patches/src/main/kotlin/app/morphe/patches/yanosik/promotions/PremiumPromotionsPatch.kt",
     "patches/src/main/kotlin/app/morphe/patches/yanosik/shared/Constants.kt",
+    "patches/src/main/resources/yanosik/vibe_patched.png",
+    "patches/src/test/kotlin/app/morphe/patches/yanosik/HomePatchedTileValidation.kt",
+    "patches/src/test/kotlin/app/morphe/patches/yanosik/TelemetryManifestValidation.kt",
+    "patches/src/test/kotlin/app/morphe/patches/yanosik/TelemetryValidation.kt",
     "patches/src/test/kotlin/app/morphe/patches/yanosik/ValidateYanosik.kt",
+    "patches/src/test/kotlin/app/morphe/patches/yanosik/VoiceAdsValidation.kt",
     "patches/src/test/kotlin/app/morphe/patches/yanosik/YanosikPatchTest.kt",
     "scripts/test_release_build.py",
     "scripts/validate-migration.py",
@@ -2166,6 +2175,6 @@
   "counts": {
     "removed": 2036,
     "changed": 98,
-    "created": 22
+    "created": 31
   }
 }
