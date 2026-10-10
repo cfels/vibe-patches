@@ -16,6 +16,18 @@ spec.loader.exec_module(release)
 
 
 class ReleaseBuildTest(unittest.TestCase):
+    def test_release_commit_message_stays_bounded(self):
+        configuration = json.loads((ROOT / ".releaserc").read_text(encoding="utf-8"))
+        plugins = dict(configuration["plugins"])
+        git = plugins["@semantic-release/git"]
+        # The first fork release can include hundreds of KB of upstream history.
+        # git's -m argument must never contain those generated release notes.
+        self.assertEqual(git["message"], "chore: Release v${nextRelease.version} [skip ci]")
+        self.assertIn("CHANGELOG.md", git["assets"])
+        self.assertIn("@semantic-release/release-notes-generator", plugins)
+        self.assertIn("@MorpheApp/changelog", plugins)
+        self.assertIn("@semantic-release/github", plugins)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)

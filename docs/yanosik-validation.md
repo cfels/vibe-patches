@@ -1,5 +1,13 @@
 # Yanosik validation
 
+## Release commit argument-size fix — 10 October 2026
+
+The supplied Actions log failed during semantic-release preparation with `Error: Command failed with E2BIG: git commit -m chore: Release v1.0.0 [skip ci]`. The configured commit message included the full generated notes from the fork's upstream history, exceeding the process argument-size limit. Removed `${nextRelease.notes}` from the git plugin's message; it now commits only the version and `[skip ci]`. The changelog asset, notes generator and GitHub release plugin remain configured, preserving full release notes in their existing destinations.
+
+Added a regression check for the bounded commit message and retained notes destinations to `scripts/test_release_build.py`. All five checks passed with `python -X utf8 scripts/test_release_build.py`. Sandboxed attempts with both system and bundled Python failed writing temporary fixture files under `.tools` with `PermissionError`; a narrowly approved run outside the sandbox passed with `TEMP`/`TMP` still directed to `.tools`. Both workflows passed `.tools/actionlint/actionlint.exe -shellcheck= -pyflakes= .github/workflows/release.yml .github/workflows/build_pull_request.yml`; `git diff --check` passed.
+
+The exact release build task combination in `prepare_release.py` remains `bash compile.sh --no-daemon :patches:generatePatchesList :patches:checkStringResources`, followed by README generation and migration validation. No build tasks or patch behavior changed, so the APK build was not repeated. No release was published or workflow dispatched. Push the fix and start a fresh run on the updated main commit to verify remote release preparation.
+
 ## GitHub runner SDK setup fix — 10 October 2026
 
 The first remote run failed before compilation: `sdkmanager 'platforms;android-36' 'build-tools;36.0.0'` exited 127 because `sdkmanager` was not on the runner's PATH. Added `android-actions/setup-android@v4` after Java setup and before SDK package installation in both the release and pull-request build workflows. The action installs the command-line tools, accepts SDK licenses and exposes `sdkmanager` on PATH.
