@@ -20,7 +20,7 @@ The reference APK defaults to `apk/yanosik_antisplit.apk`. On Bash, set `YANOSIK
 
 ## GitHub Actions setup
 
-Push these changes to your own GitHub repository and enable Actions. `.github/workflows/release.yml` runs on pushes to **main** and can also be started from **Actions → Build and release Vibe Patch → Run workflow**, selecting main.
+Push these changes to your own GitHub repository and enable Actions. `.github/workflows/release.yml` runs on pushes to **main** and can also be started from **Actions → Build and release Vibe Patch → Run workflow**, selecting main. Both build workflows explicitly set up Android's command-line tools with `android-actions/setup-android` before installing SDK platform 36 and build-tools 36.0.0, so they don't depend on `sdkmanager` already being on the runner's PATH.
 
 In **Settings → Secrets and variables → Actions**, add these repository secrets if the job's built-in token cannot read Morphe's external Maven registry:
 

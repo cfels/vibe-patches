@@ -1,5 +1,11 @@
 # Yanosik validation
 
+## GitHub runner SDK setup fix — 10 October 2026
+
+The first remote run failed before compilation: `sdkmanager 'platforms;android-36' 'build-tools;36.0.0'` exited 127 because `sdkmanager` was not on the runner's PATH. Added `android-actions/setup-android@v4` after Java setup and before SDK package installation in both the release and pull-request build workflows. The action installs the command-line tools, accepts SDK licenses and exposes `sdkmanager` on PATH.
+
+Local checks passed: `.tools/actionlint/actionlint.exe -shellcheck= -pyflakes= .github/workflows/release.yml .github/workflows/build_pull_request.yml` and `git diff --check`. No patch source or Gradle build tasks changed. A fresh GitHub run after pushing this commit is required to verify the runner setup; rerunning the old failed commit retains its old workflow.
+
 ## Friendlier patch descriptions — 10 October 2026
 
 Rewrote all ten public patch descriptions, clone option descriptions, the installer option title, bundle description and README introduction in a more conversational voice. Patch names, compatibility, defaults and execution logic remain the same. Technical coverage/limitations remain documented, including the difference between local PRO settings and server-controlled perks.
