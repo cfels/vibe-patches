@@ -14,7 +14,7 @@ import app.morphe.patches.all.misc.fix.changepackageinstaller.changePackageInsta
 @Suppress("unused")
 val changeInstallerSource = resourcePatch(
     name = "Change installer source",
-    description = "Spoofs the installer source so the app appears to be installed from an app store.",
+    description = "Makes the app think it was installed from the store you choose, like Google Play.",
     default = false
 ) {
     val packageInstallerName = stringOption(
@@ -27,7 +27,7 @@ val changeInstallerSource = resourcePatch(
             "Huawei AppGallery" to "com.huawei.appmarket",
             "Xiaomi GetApps" to "com.xiaomi.mipicks"
         ),
-        title = "Spoofed package installer name"
+        title = "App store to show"
     )
 
     dependsOn(

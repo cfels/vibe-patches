@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">Yenidən başlatma tələb olundu</string>
   <string name="morphe_settings_restart_dialog_message">Bu dəyişikliyin təsir etməsi üçün tətbiqi yenidən başlat.</string>
   <string name="morphe_settings_restart">Yenidən başlat</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">İdxal et</string>
   <string name="morphe_settings_import_copy">Köçür</string>
   <string name="morphe_settings_import_reset">Morphe tənzimləmələr standarta təyin olundu</string>
@@ -73,7 +72,6 @@ Yeni dilləri tərcümə etmək və ya mövcud tərcümələri təkmilləşdirm�
   <string name="morphe_settings_export_file">Fayla köçür</string>
   <string name="morphe_settings_export_file_success">Tənzimləmələr uğurla köçürüldü</string>
   <string name="morphe_settings_export_file_failed">Tənzimləmələri köçürmək olmadı</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">Siz ən son Morphe Patches versiyasın istifadə edirsiniz &lt;i&gt;%s&lt;/i&gt;</string>
   <string name="morphe_settings_about_links_body_version_outdated">Siz Morphe Patches-in &lt;i&gt;%1$s&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt; versiyasın istifadə edirsiniz. Yenilənmə var: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt; Yamaqlarınızı yeniləmək üçün bu tətbiqi yenidən yamaqlamağa Morphe istifadə edin</string>
   <string name="morphe_settings_about_links_dev_header">Qeyd</string>

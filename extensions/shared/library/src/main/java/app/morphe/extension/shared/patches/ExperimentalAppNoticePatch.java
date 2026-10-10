@@ -21,7 +21,7 @@ public class ExperimentalAppNoticePatch {
         String recommendedAppVersion = Utils.getRecommendedAppVersion();
 
         // The current app is the same or less than the recommended.
-        // YT 21.x uses nn.nn.nnn numbers but still sorts correctly compared to older releases.
+        // Supported application versions must use consistently sortable version strings.
         if (appVersionName.compareTo(recommendedAppVersion) <= 0) {
             return false;
         }
@@ -33,7 +33,7 @@ public class ExperimentalAppNoticePatch {
     /**
      * Injection point.
      * <p>
-     * Checks if YouTube watch history endpoint cannot be reached.
+     * Shows the experimental-version notice when user confirmation is needed.
      */
     public static void showExperimentalNoticeIfNeeded(Activity activity) {
         try {

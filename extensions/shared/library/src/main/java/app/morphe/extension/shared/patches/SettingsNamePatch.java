@@ -29,8 +29,7 @@ public final class SettingsNamePatch {
     /**
      * Injection point.
      * <p>
-     * Null keeps the name declared during patching, which is 'Settings' for the YouTube
-     * Cairo layout and the Morphe name everywhere else.
+     * Null keeps the settings name declared during patching.
      */
     @Nullable
     public static String getCustomSettingsName() {

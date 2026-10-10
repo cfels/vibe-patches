@@ -50,116 +50,32 @@ fun setPatchStringsReplaceExisting(replaceExisting: Boolean) {
     patchStringsReplaceExisting = replaceExisting
 }
 
-internal val localesYouTube = listOf(
+// Locale mappings for the retained shared resource translations.
+internal val localesAll = listOf(
     AppLocale("", ""), // Default English locale. Must be first.
-    AppLocale("af-rZA", "af"),
-    AppLocale("am-rET", "am"),
-    AppLocale("ar-rSA", "ar"),
-    AppLocale("as-rIN", "as"),
-    AppLocale("az-rAZ", "az"),
-    AppLocale("be-rBY", "be"),
-    AppLocale("bg-rBG", "bg"),
-    AppLocale("bn-rBD", "bn"),
-    AppLocale("bs-rBA", "bs"),
-    AppLocale("ca-rES", "ca"),
-    AppLocale("cs-rCZ", "cs"),
-    AppLocale("da-rDK", "da"),
-    AppLocale("de-rDE", "de"),
-    AppLocale("el-rGR", "el"),
-    AppLocale("es-rES", "es"),
-    AppLocale("et-rEE", "et"),
-    AppLocale("eu-rES", "eu"),
-    AppLocale("fa-rIR", "fa"),
-    AppLocale("fi-rFI", "fi"),
-    AppLocale("fil-rPH", "tl"),
-    AppLocale("fr-rFR", "fr"),
-    AppLocale("gl-rES", "gl"),
-    AppLocale("gu-rIN", "gu"),
-    AppLocale("hi-rIN", "hi"),
-    AppLocale("hr-rHR", "hr"),
-    AppLocale("hu-rHU", "hu"),
-    AppLocale("hy-rAM", "hy"),
-    AppLocale("in-rID", "in"),
-    AppLocale("is-rIS", "is"),
-    AppLocale("it-rIT", "it"),
-    AppLocale("iw-rIL", "iw"),
-    AppLocale("ja-rJP", "ja"),
-    AppLocale("ka-rGE", "ka"),
-    AppLocale("kk-rKZ", "kk"),
-    AppLocale("km-rKH", "km"),
-    AppLocale("kn-rIN", "kn"),
-    AppLocale("ko-rKR", "ko"),
-    AppLocale("ky-rKG", "ky"),
-    AppLocale("lo-rLA", "lo"),
-    AppLocale("lt-rLT", "lt"),
-    AppLocale("lv-rLV", "lv"),
-    AppLocale("mk-rMK", "mk"),
-    AppLocale("ml-rIN", "ml"),
-    AppLocale("mn-rMN", "mn"),
-    AppLocale("mr-rIN", "mr"),
-    AppLocale("ms-rMY", "ms"),
-    AppLocale("my-rMM", "my"),
-    AppLocale("nb-rNO", "nb"),
-    AppLocale("ne-rNP", "ne"),
-    AppLocale("nl-rNL", "nl"),
-    AppLocale("or-rIN", "or"),
-    AppLocale("pa-rIN", "pa"),
-    AppLocale("pl-rPL", "pl"),
-    AppLocale("pt-rBR", "pt-rBR"),
-    AppLocale("pt-rPT", "pt-rPT"),
-    AppLocale("ro-rRO", "ro"),
-    AppLocale("ru-rRU", "ru"),
-    AppLocale("si-rLK", "si"),
-    AppLocale("sk-rSK", "sk"),
-    AppLocale("sl-rSI", "sl"),
-    AppLocale("sq-rAL", "sq"),
-    AppLocale("sr-rCS", "b+sr+Latn"),
-    AppLocale("sr-rSP", "sr"),
-    AppLocale("sv-rSE", "sv"),
-    AppLocale("sw-rKE", "sw"),
-    AppLocale("ta-rIN", "ta"),
-    AppLocale("te-rIN", "te"),
-    AppLocale("th-rTH", "th"),
-    AppLocale("tr-rTR", "tr"),
-    AppLocale("uk-rUA", "uk"),
-    AppLocale("ur-rIN", "ur"),
-    AppLocale("uz-rUZ", "uz"),
-    AppLocale("vi-rVN", "vi"),
-    AppLocale("zh-rCN", "zh-rCN"),
-    AppLocale("zh-rTW", "zh-rTW"),
-    AppLocale("zu-rZA", "zu"),
-    // Languages not found in YouTube.
-    AppLocale("ga-rIE", "ga", false),
-    AppLocale("kmr-rTR", "kmr", false),
-    AppLocale("ckb-rIR", "ckb", false)
-)
+    AppLocale("ar-rSA", "ar", false),
+    AppLocale("de-rDE", "de", false),
+    AppLocale("es-rES", "es", false),
+    AppLocale("fi-rFI", "fi", false),
+    AppLocale("fr-rFR", "fr", false),
+    AppLocale("hi-rIN", "hi", false),
+    AppLocale("hu-rHU", "hu", false),
+    AppLocale("it-rIT", "it", false),
+    AppLocale("ja-rJP", "ja", false),
+    AppLocale("ko-rKR", "ko", false),
+    AppLocale("ms-rMY", "ms", false),
+    AppLocale("nl-rNL", "nl", false),
+    AppLocale("pl-rPL", "pl", false),
+    AppLocale("pt-rBR", "pt-rBR", false),
+    AppLocale("pt-rPT", "pt-rPT", false),
+    AppLocale("ru-rRU", "ru", false),
+    AppLocale("th-rTH", "th", false),
+    AppLocale("tr-rTR", "tr", false),
+    AppLocale("uk-rUA", "uk", false),
+    AppLocale("vi-rVN", "vi", false),
+    AppLocale("zh-rCN", "zh-rCN", false),
+    AppLocale("zh-rTW", "zh-rTW", false),
 
-internal val localesReddit = listOf(
-    AppLocale("", ""), // Default English locale. Must be first.
-    AppLocale("ar-rSA", "ar"),
-    AppLocale("de-rDE", "de"),
-    AppLocale("es-rES", "es"),
-    AppLocale("fi-rFI", "fi"),
-    AppLocale("fr-rFR", "fr"),
-    AppLocale("hi-rIN", "hi"),
-    AppLocale("hu-rHU", "hu"),
-    AppLocale("it-rIT", "it"),
-    AppLocale("ja-rJP", "ja"),
-    AppLocale("ko-rKR", "ko"),
-    AppLocale("ms-rMY", "ms"),
-    AppLocale("nl-rNL", "nl"),
-    AppLocale("pl-rPL", "pl"),
-    AppLocale("pt-rBR", "pt-rBR"),
-    AppLocale("pt-rPT", "pt-rPT"),
-    AppLocale("ru-rRU", "ru"),
-    AppLocale("th-rTH", "th"),
-    AppLocale("tr-rTR", "tr"),
-    AppLocale("uk-rUA", "uk"),
-    AppLocale("vi-rVN", "vi"),
-    AppLocale("zh-rCN", "zh-rCN"),
-    AppLocale("zh-rTW", "zh-rTW"),
-
-    // Languages not found in Reddit.
     AppLocale("af-rZA", "af", false),
     AppLocale("am-rET", "am", false),
     AppLocale("as-rIN", "as", false),
@@ -218,8 +134,6 @@ internal val localesReddit = listOf(
     AppLocale("kmr-rTR", "kmr", false),
     AppLocale("ckb-rIR", "ckb", false)
 )
-
-internal val localesAll by lazy { (localesYouTube + localesReddit).distinct() }
 
 internal class AppLocale(
     private val srcLocale: String,
@@ -302,7 +216,7 @@ internal fun createResourceDestinationDirectoryIfNeeded(
     if (!destFile.exists()) {
         if (locale.isBuiltInLanguage) {
             // Either the user provided a bad APKM that doesn't have all languages,
-            // or something changed and YouTube removed a language from the universal APK releases.
+            // or the application removed a language from the universal APK releases.
             logger.warning {
                 "!!! Provided app does not contain all region localizations. " +
                         "Locale: $locale does not exist in provided app file: $destSubPath"

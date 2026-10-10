@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">Потребно је рестартовање</string>
   <string name="morphe_settings_restart_dialog_message">Рестартујте апликацију да би ова промена ступила на снагу.</string>
   <string name="morphe_settings_restart">Рестартуј</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">Увоз</string>
   <string name="morphe_settings_import_copy">Копирај</string>
   <string name="morphe_settings_import_reset">Подешавања Morphe-а су враћена на подразумеване вредности</string>
@@ -73,7 +72,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_export_file">Извоз у фајл</string>
   <string name="morphe_settings_export_file_success">Успешно извезени подешавања</string>
   <string name="morphe_settings_export_file_failed">Неуспео извоз подешавања</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">Користите последњу верзију Morphe печева &lt;i&gt;%s&lt;/i&gt;</string>
   <string name="morphe_settings_about_links_body_version_outdated">Користите Morphe печеве верзије &lt;i&gt;%1$s&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Доступно је ажурирање: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;Да бисте ажурирали печеве, користите Morphe да бисте поново закрпили ову апликацију</string>
   <string name="morphe_settings_about_links_dev_header">Напомена</string>

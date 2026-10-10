@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">راه‌اندازی مجدد لازم است</string>
   <string name="morphe_settings_restart_dialog_message">برای اعمال این تغییر، برنامه را راه‌اندازی مجدد کنید.</string>
   <string name="morphe_settings_restart">راه‌اندازی مجدد</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">واردکردن</string>
   <string name="morphe_settings_import_copy">کپی</string>
   <string name="morphe_settings_import_reset">تنظیمات Morphe به پیش‌فرض بازنشانی شد</string>
@@ -71,7 +70,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_export_file">صادرکردن به فایل</string>
   <string name="morphe_settings_export_file_success">تنظیمات با موفقیت صادر شد</string>
   <string name="morphe_settings_export_file_failed">صادرکردن تنظیمات ناموفق بود</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">شما از جدیدترین نسخهٔ Patches برای Morphe استفاده می‌کنید &lt;i&gt;%s&lt;/i&gt;</string>
   <string name="morphe_settings_about_links_body_version_outdated">شما از نسخهٔ Patches برای Morphe &lt;i&gt;%1$s&lt;/i&gt; استفاده می‌کنید&lt;br&gt;&lt;br&gt;&lt;b&gt;به‌روزرسانی موجود است: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;برای به‌روزرسانی پچ‌های خود، از Morphe برای پچ‌کردن دوبارهٔ این برنامه استفاده کنید</string>
   <string name="morphe_settings_about_links_dev_header">یادداشت</string>

@@ -40,11 +40,7 @@ internal fun main(args: Array<String>) {
     val exceptions = mutableListOf<Exception>()
 
     arrayOf(
-        "music",
-        "shared",
-        "shared-youtube",
-        "youtube",
-        "reddit"
+        "shared"
     ).forEach { appId ->
         localesAll.forEach { locale ->
             val srcFolderName = locale.getSrcLocaleFolderName()

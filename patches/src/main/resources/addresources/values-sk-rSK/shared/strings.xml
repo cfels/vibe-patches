@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">Vyžaduje sa reštart</string>
   <string name="morphe_settings_restart_dialog_message">Restartujte aplikáciu, aby sa táto zmena prejavila.</string>
   <string name="morphe_settings_restart">Reštartovať</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">Importovať</string>
   <string name="morphe_settings_import_copy">Kopírovať</string>
   <string name="morphe_settings_import_reset">Nastavenia Morphe boli obnovené na predvolené</string>
@@ -73,7 +72,6 @@ Ak chcete prekladať nové jazyky alebo vylepšiť existujúce preklady, navšt�
   <string name="morphe_settings_export_file">Exportovať do súboru</string>
   <string name="morphe_settings_export_file_success">Nastavenia boli úspešne exportované</string>
   <string name="morphe_settings_export_file_failed">Nepodarilo sa exportovať nastavenia</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">Používate najnovšiu verziu Morphe Patches &lt;i&gt;%s&lt;/i&gt;</string>
   <string name="morphe_settings_about_links_body_version_outdated">Používate záplaty Morphe verzia &lt;i&gt;%1$s&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Dostupná aktualizácia: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;Na aktualizáciu záplat znovu zaplátajte aplikáciu cez Morphe</string>
   <string name="morphe_settings_about_links_dev_header">Poznámka</string>

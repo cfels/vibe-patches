@@ -26,26 +26,15 @@
 
 package app.morphe.patches.all.misc.clone
 
-import app.morphe.patcher.Fingerprint
-import app.morphe.patcher.extensions.InstructionExtensions.getInstruction
-import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
-import app.morphe.patcher.methodCall
-import app.morphe.patcher.patch.BytecodePatchContext
 import app.morphe.patcher.patch.Option
 import app.morphe.patcher.patch.OptionException
 import app.morphe.patcher.patch.booleanOption
-import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.patch.resourcePatch
 import app.morphe.patcher.patch.stringOption
 import app.morphe.util.asSequence
 import app.morphe.util.findElementByAttributeValue
-import app.morphe.util.findInstructionIndicesReversedOrThrow
-import com.android.tools.smali.dexlib2.Opcode
-import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import org.w3c.dom.Element
 import java.util.logging.Logger
-
-private const val PACKAGE_NAME_REDDIT = "com.reddit.frontpage"
 
 private lateinit var packageNameOption: Option<String>
 
@@ -67,52 +56,12 @@ fun setOrGetFallbackPackageName(fallbackPackageName: String): String {
     }
 }
 
-/**
- * Selectively changes usage of Context.getPackageName() to the original package name.
- */
-context(patchContext: BytecodePatchContext)
-private fun applyGetPackageName(oldPackageName: String, classToChange: String) {
-    val filter = methodCall(
-        opcode = Opcode.INVOKE_VIRTUAL,
-        smali = "Landroid/content/Context;->getPackageName()Ljava/lang/String;"
-    )
-
-    // Same code as morphe-patches-library matchAllMethodIndicesForEach()
-    // but copied here to make this patch more portable.
-    Fingerprint(
-        definingClass = classToChange,
-        filters = listOf(filter)
-    ).matchAllOrNull()?.forEach { match ->
-        match.method.apply {
-            findInstructionIndicesReversedOrThrow(filter).forEach { index ->
-                val moveResultIndex = index + 1
-
-                // Ignore calls to getPackageName() that do not use the return value.
-                val returnInstruction = getInstruction(moveResultIndex)
-                if (returnInstruction.opcode != Opcode.MOVE_RESULT_OBJECT) {
-                    return@forEach
-                }
-
-                val register = (returnInstruction as OneRegisterInstruction).registerA
-                replaceInstruction(
-                    moveResultIndex,
-                    """
-                        # Replace return-object with constant string
-                        const-string v$register, "$oldPackageName"
-                    """
-                )
-            }
-        }
-    }
-}
-
 @Suppress("unused")
 val cloneAppPatch = resourcePatch(
     name = "Clone app",
-    description = "Changes the app package name to allow installing the same app multiple times. " +
-            "By default \".morphe\" is appended to the package name. Each cloned install must " +
-            "use a unique package name. Cloning does not work with all apps and using this patch " +
-            "may cause app crashes or other unexpected behavior.",
+    description = "Lets you install another copy of the app by giving it a different package name. " +
+            "Adds \".morphe\" by default; each copy needs its own name. " +
+            "Some apps don't handle cloning well and may crash or behave strangely.",
     default = false
 ) {
     packageNameOption = stringOption(
@@ -120,7 +69,7 @@ val cloneAppPatch = resourcePatch(
         default = "Default",
         values = mapOf("Default" to "Default"),
         title = "Package name",
-        description = "Package name to use for the cloned app.",
+        description = "Choose a unique package name for this copy, or leave Default to add .morphe.",
         required = true,
     ) {
         it == "Default" || it!!.matches(Regex("^[a-z]\\w*(\\.[a-z]\\w*)+$"))
@@ -130,16 +79,16 @@ val cloneAppPatch = resourcePatch(
         key = "updatePermissions",
         default = true,
         title = "Update permissions",
-        description = "Update custom permissions declared by the app. " +
-            "Fixes installation conflicts, but can break features in certain apps.",
+        description = "Renames the app's custom permissions so the copies can be installed together. " +
+            "This can break features in some apps.",
     )
 
     val updateProvidersOption = booleanOption(
         key = "updateProviders",
         default = true,
         title = "Update providers",
-        description = "Update provider names declared by the app. " +
-            "Fixes installation conflicts, but can break features in certain apps.",
+        description = "Renames the app's providers so the copies can be installed together. " +
+            "This can break features in some apps.",
     )
 
     fun getReplacementPackageName(originalPackageName: String) : String {
@@ -150,19 +99,6 @@ val cloneAppPatch = resourcePatch(
             "$originalPackageName.morphe"
         }
     }
-
-    dependsOn(bytecodePatch {
-        execute {
-            when (val originalPackageName = packageMetadata.packageName) {
-                PACKAGE_NAME_REDDIT -> {
-                    applyGetPackageName(
-                        originalPackageName,
-                        "Lcom/google/android/recaptcha/internal"
-                    )
-                }
-            }
-        }
-    })
 
     finalize {
         /**
@@ -200,11 +136,6 @@ val cloneAppPatch = resourcePatch(
 
         // Override user options with known working values for specific apps.
         when (packageName) {
-            PACKAGE_NAME_REDDIT -> {
-                applyUpdatePermissions = true
-                applyUpdateProviders = true
-            }
-            "com.google.android.youtube", "com.google.android.apps.youtube.music",
             "com.google.android.apps.photos", "com.google.android.apps.magazines" -> {
                 // Permissions and providers are updated by "GmsCore support" patch
                 applyUpdatePermissions = false

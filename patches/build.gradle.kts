@@ -1,11 +1,12 @@
 import org.gradle.api.tasks.JavaExec
+import org.gradle.jvm.tasks.Jar
 
 group = "app.morphe"
 
 patches {
     about {
-        name = "Morphe Patches"
-        description = "Patches for Morphe"
+        name = "Vibe Patch"
+        description = "Yanosik tweaks and a few handy universal patches"
         source = "git@github.com:MorpheApp/morphe-patches.git"
         author = "MorpheApp"
         contact = "na"
@@ -17,8 +18,7 @@ patches {
 // Separate configuration so gson is available at runtime for the
 // generatePatchesList task but never bundled into the APK.
 val patchListGeneratorClasspath = configurations.create("patchListGeneratorClasspath")
-val jamApk = providers.gradleProperty("jamApk")
-val jamOutput = providers.gradleProperty("jamOutput")
+val yanosikApk = providers.gradleProperty("yanosikApk")
 
 dependencies {
     // Required due to smali, or build fails. Can be removed once smali is bumped.
@@ -37,9 +37,21 @@ dependencies {
 }
 
 tasks {
+    // buildAndroid adds DEX to the jar task's output in place. Rename that
+    // archive itself rather than copying it into a second installable bundle.
+    withType<Jar>().configureEach {
+        archiveBaseName.set("vibe-patch")
+    }
+
+    register("buildVibePatch") {
+        description = "Builds the Vibe Patch Android bundle (alias for buildAndroid)"
+        group = "build"
+        dependsOn("buildAndroid")
+    }
+
     test {
         useJUnitPlatform()
-        jamApk.orNull?.let { systemProperty("jamApk", it) }
+        yanosikApk.orNull?.let { systemProperty("yanosikApk", it) }
     }
 
     register<JavaExec>("checkStringResources") {
@@ -60,20 +72,19 @@ tasks {
         mainClass.set("app.morphe.util.PatchListGeneratorKt")
     }
 
-    register<JavaExec>("validateJam") {
-        description = "Patches a supplied YouTube Music APK for Jam validation and optional device testing"
+    register<JavaExec>("validateYanosik") {
+        description = "Applies Yanosik patches to a reference APK and validates serialized DEX"
         group = "verification"
-
         dependsOn("testClasses")
         classpath = sourceSets["test"].runtimeClasspath
-        mainClass.set("app.morphe.patches.music.interaction.jam.JamDeviceBuildKt")
-
+        mainClass.set("app.morphe.patches.yanosik.ValidateYanosikKt")
         doFirst {
-            val apk = jamApk.orNull
-                ?: throw GradleException("validateJam requires -PjamApk=/absolute/path/to/ytm.apk")
-            setArgs(listOfNotNull(apk, jamOutput.orNull))
+            val apk = yanosikApk.orNull
+                ?: throw GradleException("validateYanosik requires -PyanosikApk=/absolute/path/to/reference.apk")
+            setArgs(listOf(apk, layout.buildDirectory.dir("yanosik-validation").get().asFile.absolutePath))
         }
     }
+
     // Used by gradle-semantic-release-plugin.
     publish {
         dependsOn("generatePatchesList")

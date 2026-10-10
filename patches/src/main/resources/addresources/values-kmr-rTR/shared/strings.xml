@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">Nûtin hewce ye</string>
   <string name="morphe_settings_restart_dialog_message">Ji bo pêşxistina ev biguhere, sepanê nûtinê bike.</string>
   <string name="morphe_settings_restart">Nûtinê bike</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">Importe kirin</string>
   <string name="morphe_settings_import_copy">Nuşînekiye</string>
   <string name="morphe_settings_import_reset">Sazkarên Morphe pêşdizitin</string>
@@ -64,7 +63,6 @@ Da ku zimanên nû wergerînin an wergerandinên hebin baş bikin, malpera morph
   <string name="morphe_settings_export_file">Dabe ser pel</string>
   <string name="morphe_settings_export_file_success">Nastînên sazkirinê ji rêzika hevokî ve birayê.</string>
   <string name="morphe_settings_export_file_failed">Ji rêzika hevokî sazkirinên nezanin.</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">Hûn îro versîyona herî dawî ya Morphe Patches &lt;i&gt;%s&lt;/i&gt; bikar tînin</string>
   <string name="morphe_settings_about_links_body_version_outdated">Hûn versîyona Morphe Patches &lt;i&gt;%1$s&lt;/i&gt; bikar tînin &lt;br&gt;&lt;br&gt;&lt;b&gt;Nûvekirin heye: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;Da ku patches xwe nûve bikin, sêwirana Morphe bi karanîn pêxin.</string>
   <string name="morphe_settings_about_links_dev_header">Nuşte</string>

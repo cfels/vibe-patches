@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">Wymagane ponowne uruchomienie</string>
   <string name="morphe_settings_restart_dialog_message">Uruchom aplikację ponownie, aby zastosować zmiany.</string>
   <string name="morphe_settings_restart">Uruchom ponownie</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">Importuj</string>
   <string name="morphe_settings_import_copy">Kopiuj</string>
   <string name="morphe_settings_import_reset">Przywrócono domyślne ustawienia Morphe</string>
@@ -73,7 +72,6 @@ Aby przetłumaczyć aplikację na nowe języki lub poprawić istniejące tłumac
   <string name="morphe_settings_export_file">Wyeksportuj do pliku</string>
   <string name="morphe_settings_export_file_success">Ustawienia wyeksportowane pomyślnie</string>
   <string name="morphe_settings_export_file_failed">Nie udało się wyeksportować ustawień</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">Używasz najnowszej wersji modyfikacji Morphe &lt;i&gt;%s&lt;/i&gt;</string>
   <string name="morphe_settings_about_links_body_version_outdated">Używasz modyfikacji Morphe w wersji &lt;i&gt;%1$s&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Dostępna aktualizacja: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;Aby zaktualizować modyfikacje, zmodyfikuj tę aplikację ponownie za pomocą Morphe</string>
   <string name="morphe_settings_about_links_dev_header">Uwaga</string>

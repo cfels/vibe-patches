@@ -35,3 +35,15 @@ google-services.json
 
 # NPM modules
 node_modules/
+
+# Python helpers and release staging tests.
+__pycache__/
+*.pyc
+
+# Local inspection tools, decompiled application data and isolated Gradle cache.
+.tools/
+.gradle-user/
+/reverse/
+/apk/
+apk/
+reverse/

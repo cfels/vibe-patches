@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">Reinicio necesario</string>
   <string name="morphe_settings_restart_dialog_message">Reinicie a aplicación para que o cambio teña efecto</string>
   <string name="morphe_settings_restart">Reiniciar</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">Importar</string>
   <string name="morphe_settings_import_copy">Copiar</string>
   <string name="morphe_settings_import_reset">As configuracións de Morphe se restablecerán os valores predeterminados</string>
@@ -49,7 +48,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_search_empty_history_title">O historial de buscas está baleiro</string>
   <string name="morphe_settings_name_default_item">Predefinido</string>
   <string name="morphe_settings_name_custom_item">Personalizado</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_dev_header">Nota</string>
   <string name="morphe_settings_about_links_dev_body">Esta é una versión preliminar e podería experimentar problemas inesperados</string>
   <string name="morphe_settings_about_links_header">Ligazóns oficiais</string>

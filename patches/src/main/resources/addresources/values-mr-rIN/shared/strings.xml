@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">पुनरारंभ आवश्यक</string>
   <string name="morphe_settings_restart_dialog_message">हा बदल प्रभावी होण्यासाठी ॲप पुनरारंभ करा.</string>
   <string name="morphe_settings_restart">पुनरारंभ करा</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">आयात करा</string>
   <string name="morphe_settings_import_copy">कॉपी करा</string>
   <string name="morphe_settings_import_reset">Morphe सेटिंग्ज डीफॉल्टवर रीसेट करा</string>
@@ -63,7 +62,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_export_file">फाईलमध्ये एक्सपोर्ट करा</string>
   <string name="morphe_settings_export_file_success">सेटिंग्ज यशस्वीरित्या एक्सपोर्ट केल्या</string>
   <string name="morphe_settings_export_file_failed">सेटिंग्ज एक्सपोर्ट करण्यात अयशस्वी</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">तुम्ही नवीनतम मॉर्फे पॅच्स आवृत्ती &lt;i&gt;%s&lt;/i&gt; वापरत आहात</string>
   <string name="morphe_settings_about_links_body_version_outdated">तुम्ही मॉर्फे पॅच्स आवृत्ती &lt;i&gt;%1$s&lt;/i&gt; वापरत आहात&lt;br&gt;&lt;br&gt;&lt;b&gt;अपडेट उपलब्ध: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;पॅच अपडेट करण्यासाठी, ॲप पुन्हा पॅच करण्यासाठी मॉर्फे वापरा</string>
   <string name="morphe_settings_about_links_dev_header">टीप</string>

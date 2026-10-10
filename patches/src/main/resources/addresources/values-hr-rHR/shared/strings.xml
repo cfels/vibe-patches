@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">Potrebno je ponovno pokretanje</string>
   <string name="morphe_settings_restart_dialog_message">Ponovno pokrenite aplikaciju da bi ova promjena stupila na snagu.</string>
   <string name="morphe_settings_restart">Ponovno pokreni</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">Uvezi</string>
   <string name="morphe_settings_import_copy">Kopiraj</string>
   <string name="morphe_settings_import_reset">Morphe postavke vraćene na zadane vrijednosti</string>
@@ -73,7 +72,6 @@ Za prevođenje novih jezika ili poboljšanje postojećih prijevoda posjetite mor
   <string name="morphe_settings_export_file">Izvezi u datoteku</string>
   <string name="morphe_settings_export_file_success">Postavke su uspješno izvezene</string>
   <string name="morphe_settings_export_file_failed">Izvoz postavki nije uspio</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">Koristite najnoviju verziju Morphe Patcheva &lt;i&gt;%s&lt;/i&gt;</string>
   <string name="morphe_settings_about_links_body_version_outdated">Koristite verziju Morphe Patcheva &lt;i&gt;%1$s&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Dostupno ažuriranje: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;Za ažuriranje patcheva, koristite Morphe za ponovno patchanje ove aplikacije</string>
   <string name="morphe_settings_about_links_dev_header">Napomena</string>

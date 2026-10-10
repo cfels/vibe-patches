@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">Újraindítás szükséges</string>
   <string name="morphe_settings_restart_dialog_message">Indítsa újra az alkalmazást, hogy a változás érvénybe lépjen.</string>
   <string name="morphe_settings_restart">Újraindítás</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">Importálás</string>
   <string name="morphe_settings_import_copy">Másolás</string>
   <string name="morphe_settings_import_reset">A Morphe beállítások visszaállnak az alapértelmezettre</string>
@@ -73,7 +72,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_export_file">Fájlba exportálás</string>
   <string name="morphe_settings_export_file_success">A beállítások sikeresen exportálva</string>
   <string name="morphe_settings_export_file_failed">Hiba történt a beállítások exportálásakor</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">A Morphe Patches legutóbbi &lt;i&gt;%s&lt;/i&gt; verzióját itt használja</string>
   <string name="morphe_settings_about_links_body_version_outdated">Itt használja a Morphe Patches &lt;i&gt;%1$s&lt;/i&gt; verzióját&lt;br&gt;&lt;br&gt;&lt;b&gt;Frissítés elérhető: &lt;i&gt;%2$s&lt;i&gt;&lt;b&gt;&lt;br&gt;&lt;br&gt;Az appfrissítéshez használja a Morphe-t</string>
   <string name="morphe_settings_about_links_dev_header">Megjegyzés</string>

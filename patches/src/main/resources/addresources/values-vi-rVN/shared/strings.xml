@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">Yêu cầu khởi động lại</string>
   <string name="morphe_settings_restart_dialog_message">Khởi động lại ứng dụng để thay đổi này có hiệu lực.</string>
   <string name="morphe_settings_restart">Khởi động lại</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">Nhập</string>
   <string name="morphe_settings_import_copy">Sao chép</string>
   <string name="morphe_settings_import_reset">Đặt lại cài đặt Morphe về mặc định</string>
@@ -73,7 +72,6 @@ Bạn có thể yêu cầu thêm ngôn ngữ hoặc cải thiện bản dịch h
   <string name="morphe_settings_export_file">Xuất ra tệp</string>
   <string name="morphe_settings_export_file_success">Đã xuất cài đặt thành công</string>
   <string name="morphe_settings_export_file_failed">Không thể xuất cài đặt</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">Bạn đang dùng bản vá Morphe phiên bản &lt;i&gt;%s&lt;/i&gt;</string>
   <string name="morphe_settings_about_links_body_version_outdated">Bạn đang dùng bản vá Morphe phiên bản &lt;i&gt;%1$s&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Đã có bản cập nhật mới: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;Để cập nhật các bản vá của bạn, hãy dùng Morphe để vá lại ứng dụng này</string>
   <string name="morphe_settings_about_links_dev_header">Lưu ý</string>

@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">Riavvio necessario</string>
   <string name="morphe_settings_restart_dialog_message">Riavvia l\'app affinché questa modifica abbia effetto.</string>
   <string name="morphe_settings_restart">Riavvia</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">Importa</string>
   <string name="morphe_settings_import_copy">Copia</string>
   <string name="morphe_settings_import_reset">Reimposta le impostazioni di Morphe ai valori predefiniti</string>
@@ -73,7 +72,6 @@ Per tradurre nuove lingue o migliorare le traduzioni esistenti, visita morphe.so
   <string name="morphe_settings_export_file">Esporta su file</string>
   <string name="morphe_settings_export_file_success">Esportazione delle impostazioni avvenuta con successo</string>
   <string name="morphe_settings_export_file_failed">Impossibile esportare le impostazioni</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">Stai usando la versione più recente delle Patch Morphe &lt;i&gt;%s&lt;/i&gt;</string>
   <string name="morphe_settings_about_links_body_version_outdated">Stai usando la versione delle Patch Morphe &lt;i&gt;%1$s&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Aggiornamento disponibile: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;Per aggiornare le tue patch, usa Morphe per ripatchare quest\'app</string>
   <string name="morphe_settings_about_links_dev_header">Nota</string>

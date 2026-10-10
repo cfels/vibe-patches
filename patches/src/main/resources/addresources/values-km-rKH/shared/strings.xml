@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">ត្រូវការចាប់ផ្តើមសាជាថ្មី</string>
   <string name="morphe_settings_restart_dialog_message">ចាប់ផ្តើមកម្មវិធីសាជាថ្មី ដើម្បីឱ្យការផ្លាស់ប្តូរនេះមានប្រសិទ្ធភាព។</string>
   <string name="morphe_settings_restart">ចាប់ផ្តើមសាថ្មី</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">នាំចូល</string>
   <string name="morphe_settings_import_copy">ចម្លង</string>
   <string name="morphe_settings_import_reset">ការកំណត់របស់ Morphe ត្រូវស្ដារទៅបុរេជម្រើស</string>
@@ -43,7 +42,6 @@ Second \"item\" text"</string>
   <string name="morphe_language_DEFAULT">ភាសាកម្មវិធី</string>
   <string name="morphe_pref_import_export_title">នាំចូល / នាំចេញ</string>
   <string name="morphe_pref_import_export_summary">ការកំណត់នាំចូល / នាំចេញរបស់ Morphe</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_header">បញ្ជាប់ផ្លូវការ</string>
   <string name="morphe_settings_about_links_website">វេបសាយ</string>
   <string name="morphe_settings_about_links_translations">ការបកប្រែ</string>

@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">Atosú ag teastáil</string>
   <string name="morphe_settings_restart_dialog_message">Atosaigh an aip chun go mbeidh an t-athrú seo i bhfeidhm.</string>
   <string name="morphe_settings_restart">Atosaigh</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">Iompórtáil</string>
   <string name="morphe_settings_import_copy">Cóipeáil</string>
   <string name="morphe_settings_import_reset">Athshocraigh socruithe Morphe go réamhshocrú</string>
@@ -73,7 +72,6 @@ Chun teangacha nua a aistriú nó chun na haistriúcháin atá ann cheana a fhea
   <string name="morphe_settings_export_file">Easpórtáil chuig comhad</string>
   <string name="morphe_settings_export_file_success">Easpórtáladh na socruithe go rathúil</string>
   <string name="morphe_settings_export_file_failed">Theip ar shocruithe a easpórtáil</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">Tá tú ag baint úsáide as an leagan is déanaí de Morphe Patches &lt;i&gt;%s&lt;/i&gt;</string>
   <string name="morphe_settings_about_links_body_version_outdated">Tá tú ag baint úsáide as leagan &lt;i&gt;%1$s&lt;/i&gt; Morphe Patches&lt;br&gt;&lt;br&gt;&lt;b&gt;Nuashonrú ar fáil: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;Chun do phaisteanna a nuashonrú, bain úsáid as Morphe chun an aip seo a athphaisteáil</string>
   <string name="morphe_settings_about_links_dev_header">Nóta</string>

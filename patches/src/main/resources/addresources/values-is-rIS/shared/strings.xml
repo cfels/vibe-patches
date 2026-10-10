@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">Endurræsing krafist</string>
   <string name="morphe_settings_restart_dialog_message">Endurræstu appið til að breytingarnar taki gildi.</string>
   <string name="morphe_settings_restart">Endurræsa</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">Innfluta</string>
   <string name="morphe_settings_import_copy">Afrita</string>
   <string name="morphe_settings_import_reset">Morphe stillingar endurstillaðar að sjálfgefnu gildi</string>
@@ -73,7 +72,6 @@ Til að þýða ný lönd eða bæta núverandi þýðingar skaltu heimsækja mo
   <string name="morphe_settings_export_file">Útfluta úr skrá</string>
   <string name="morphe_settings_export_file_success">Stillingar útfærðar með góðum árangri</string>
   <string name="morphe_settings_export_file_failed">Útflutning mistókst</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">Þú notar nýjustu Morphe Patches útgáfuna &lt;i&gt;%s&lt;/i&gt;</string>
   <string name="morphe_settings_about_links_body_version_outdated">Þú notar Morphe Patches útgáfu &lt;i&gt;%1$s&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Uppfærsla í boði: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;Til að uppfæra þína tákna skaltu nota Morphe til að endurtáka þetta app</string>
   <string name="morphe_settings_about_links_dev_header">Athugaðu</string>

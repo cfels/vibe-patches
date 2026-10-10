@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">ئه‌گه‌رى دووباره‌کردنه‌وه‌ هه‌یه‌</string>
   <string name="morphe_settings_restart_dialog_message">بۆو ئه‌و گۆرانکاریانه‌ که هه‌تاوه‌ته‌، سه‌ره‌کی سه‌ره‌وه پێکهێنه‌.</string>
   <string name="morphe_settings_restart">دووباره‌سه‌ره‌کهێنه‌</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">واردکه‌</string>
   <string name="morphe_settings_import_copy">نوسه‌</string>
   <string name="morphe_settings_import_reset">سازکه‌يه‌كانی Morphe گه‌رى سه‌ره‌وه ببه‌سته</string>
@@ -58,7 +57,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_import_file_failed">نەگەشت بە هاتنەوەی ڕێکخستنەکان</string>
   <string name="morphe_settings_export_file_success">ئەم فێڵانەی دەستخاتن سەرکەوتێت</string>
   <string name="morphe_settings_export_file_failed">\"نەگەشت بە دەربازبوونی ڕێکخستنەکان\"</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">طلوا جهأست إرا ءا ءعلوا ءأاءة الرسءات &lt;i&gt;%s&lt;/i&gt;</string>
   <string name="morphe_settings_about_links_dev_header">نوسین</string>
   <string name="morphe_settings_about_links_dev_body">صورو اين عميادي هستني استماران إسباقريانها إسباقالدها</string>

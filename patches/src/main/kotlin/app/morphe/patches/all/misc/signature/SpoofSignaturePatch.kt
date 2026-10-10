@@ -13,7 +13,7 @@ import app.morphe.patches.all.misc.fix.spoofsignature.spoofSignaturePatch
 @Suppress("unused")
 val spoofSignaturePatch = resourcePatch (
     name = "Spoof signature",
-    description = "Spoofs the package signature of the original APK.",
+    description = "Makes the app see the original APK's signature when it checks its own package.",
     default = false
 ) {
     dependsOn(spoofSignaturePatch)

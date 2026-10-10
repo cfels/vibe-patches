@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">ری اسٹارٹ درکار ہے</string>
   <string name="morphe_settings_restart_dialog_message">مطلوبہ تبدیلیوں کے اثرانداز ہونے کے لئے ایپ کو دوبارہ شروع ہونے کی ضرورت ہے۔</string>
   <string name="morphe_settings_restart">ری اسٹارٹ</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">امپورٹ</string>
   <string name="morphe_settings_import_copy">کاپی کریں</string>
   <string name="morphe_settings_import_reset">Morphe کی ترتیبات کو ریسیٹ کریں</string>
@@ -62,7 +61,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_export_file">فائل میں برآمد کریں</string>
   <string name="morphe_settings_export_file_success">ترتیبات کی برآمدی مکمل ہو چکی</string>
   <string name="morphe_settings_export_file_failed">ترتیبات کی برآمدی ناکام ہو گئی</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">آپ Morphe Patches کا جدید ورژن استعمال کر رہے ہیں &lt;i&gt;%s&lt;/i&gt;</string>
   <string name="morphe_settings_about_links_body_version_outdated">آپ Morphe Patches کا ورژن &lt;i&gt;%1$s&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt; استعمال کررہے ہیں اپڈیٹ دستیاب ہے: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt; پیچ کو اپڈیٹ کرنے کے لئے، Morphe کے استعمال سے اس ایپ کو دوبارہ پیچ کریں</string>
   <string name="morphe_settings_about_links_dev_header">نوٹ</string>

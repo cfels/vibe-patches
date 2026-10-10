@@ -26,7 +26,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_restart_title">पुनःसुरु आवश्यक</string>
   <string name="morphe_settings_restart_dialog_message">एपलाई प्रभावमा ल्याउन पुन:सुरु गर्नुहोस्।</string>
   <string name="morphe_settings_restart">पुनःसुरु गर्नुहोस्</string>
-  <!-- String is also duplicated in Reddit import / export preference -->
   <string name="morphe_settings_import">आयात गर्नुहोस्</string>
   <string name="morphe_settings_import_copy">कपि गर्नुहोस्</string>
   <string name="morphe_settings_import_reset">मर्फ सेटिङहरू पूर्वनिर्धारितमा रिसेट गरियो</string>
@@ -62,7 +61,6 @@ Second \"item\" text"</string>
   <string name="morphe_settings_export_file">फाइलमा निर्यात गर्नुहोस्</string>
   <string name="morphe_settings_export_file_success">सेटिङहरू सफलतापूर्वक निर्यात गरियो</string>
   <string name="morphe_settings_export_file_failed">सेटिङहरू निर्यात गर्न असफल भयो</string>
-  <!-- String is also duplicated in Reddit about preference -->
   <string name="morphe_settings_about_links_body_version_current">तपाईं नवीनतम Morphe प्याचहरू संस्करण &lt;i&gt;%s&lt;/i&gt; प्रयोग गर्दै हुनुहुन्छ।</string>
   <string name="morphe_settings_about_links_body_version_outdated">तपाईं मर्फ प्याचहरू संस्करण &lt;i&gt;%1$s&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;अपडेट उपलब्ध: &lt;i&gt;%2$s&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt; आफ्नो प्याचहरू अपडेट गर्न, यो एप प्याच गर्न मर्फ प्रयोग गर्नुहोस्</string>
   <string name="morphe_settings_about_links_dev_header">नोट</string>

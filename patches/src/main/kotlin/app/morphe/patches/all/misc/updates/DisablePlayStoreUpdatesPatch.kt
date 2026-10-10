@@ -71,9 +71,8 @@ private val disablePlayStoreUpdatesResourcePatch = resourcePatch {
 @Suppress("unused")
 internal val disablePlayStoreUpdatesPatch = bytecodePatch(
     name = "Disable Play Store updates",
-    description = "Disables Play Store updates by setting the version code to the maximum allowed. " +
-            "This patch may cause unexpected issues with some apps and does not work if the " +
-            "app is installed by root mounting",
+    description = "Stops Play Store updates by setting the app's version code to the highest " +
+            "Android allows. Can cause issues in some apps and won't work with root-mounted installs.",
     default = false
 ) {
 
