@@ -25,10 +25,14 @@ $sources = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot 'patches/src/main/k
 $sources += @(Get-ChildItem -LiteralPath (Join-Path $repoRoot 'patches/src/test/kotlin/app/morphe/patches/yanosik') -Filter '*.kt' |
     Where-Object Name -ne 'YanosikPatchTest.kt' | ForEach-Object FullName)
 $patchResources = Join-Path $repoRoot 'patches/src/main/resources'
+$compiledResources = Join-Path $repoRoot 'patches/build/resources/main'
+if (-not (Test-Path -LiteralPath (Join-Path $compiledResources 'extensions/yanosik/vibe-settings.mpe'))) {
+    throw 'The Vibe settings extension must be built first. Run compile.bat or :patches:processResources before standalone validation.'
+}
 & $JavaExecutable -cp "$compilerHome/lib/*" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler `
     -kotlin-home $compilerHome -Xcontext-parameters -jvm-target 17 `
     -classpath $runtimePath -d $compiledJar @sources
 if ($LASTEXITCODE -ne 0) { throw "Kotlin compilation failed: $LASTEXITCODE" }
-& $JavaExecutable -Xmx3g -cp "$compiledJar;$runtimePath;$patchResources" `
+& $JavaExecutable -Xmx3g -cp "$compiledJar;$runtimePath;$patchResources;$compiledResources" `
     app.morphe.patches.yanosik.ValidateYanosikKt $apkPath (Join-Path $outputRoot 'workspace')
 if ($LASTEXITCODE -ne 0) { throw "Yanosik DEX validation failed: $LASTEXITCODE" }

@@ -9,7 +9,7 @@ This file applies throughout this repository. Follow the user's current request 
 3. Read the newest dated section of `docs/yanosik-validation.md` for commands and results. Older sections describe historical failures; GitHub Packages access and the full build were working on 10 October 2026.
 4. Search production source first. Search decompiled APK content separately when investigating app behavior.
 
-The current collection has five Yanosik patches and five public universal patches. YouTube, YouTube Music and Reddit were intentionally removed. Historical changelog/archive references do not mean these collections should be restored.
+The current collection has six Yanosik patches and five public universal patches. YouTube, YouTube Music and Reddit were intentionally removed. Historical changelog/archive references do not mean these collections should be restored.
 
 ## Source map
 
@@ -26,7 +26,7 @@ The current collection has five Yanosik patches and five public universal patche
 | `patches/src/main/kotlin/app/morphe/patches/util/` | Resource models and string checks. |
 | `patches/src/main/resources/` | Patch resources/localizations, separate from the target APK's resources. |
 | `patches/stub/` | Compile-time Android API stubs. |
-| `extensions/shared/`, `extensions/all/change-version-code/` | Retained Android extension modules. Yanosik currently needs no extension. |
+| `extensions/shared/`, `extensions/all/change-version-code/` | Retained Android extension modules. Vibe settings uses `extensions/yanosik/vibe-settings/` for its local persistent theme toggle. |
 | `patches/src/test/kotlin/app/morphe/patches/yanosik/ValidateYanosik.kt` | Real reference-APK patch application, serialized DEX checks and negative tests. |
 | `patches/src/test/kotlin/app/morphe/patches/yanosik/YanosikPatchTest.kt` | JUnit wrapper; skips when the reference APK property is absent. |
 | `patches/build.gradle.kts` | Patch dependencies and validation/index/resource tasks. |

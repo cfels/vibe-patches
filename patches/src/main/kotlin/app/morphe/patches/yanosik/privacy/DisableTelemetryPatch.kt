@@ -27,6 +27,14 @@ private const val PROXI = "Lcloud/proxi/ProxiCloudSdk;"
 private const val CRASH = "Lcom/google/firebase/crashlytics/FirebaseCrashlytics;"
 private const val AUDIO_ADS = "Lpl/neptis/features/audioalerts/AudioAlertsService;"
 private const val BANNER_ADS = "Lpl/neptis/features/adsbanners/adsservice/AdvertService;"
+private const val REVENUE_HTTP = "Lcom/revenuecat/purchases/common/HTTPClient;"
+private const val REVENUE_DIAGNOSTICS = "Lcom/revenuecat/purchases/common/diagnostics/DiagnosticsTracker;"
+private const val REVENUE_DISABLED = """
+    new-instance v0, Ljava/io/IOException;
+    const-string v1, "RevenueCat requests disabled by Vibe"
+    invoke-direct { v0, v1 }, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
+    throw v0
+"""
 
 private class Target(
     val fingerprint: Fingerprint,
@@ -43,6 +51,25 @@ private fun callTarget(
 ), prefix, afterSuper)
 
 private val telemetryTargets = buildList {
+    // All RevenueCat base/fallback URLs use this client. Fail locally through
+    // the SDK's normal IOException callbacks before constructing or opening a
+    // request; don't fabricate a purchase, response or remote entitlement.
+    add(callTarget(REVENUE_HTTP, "performRequest", listOf("Ljava/net/URL;",
+        "Lcom/revenuecat/purchases/common/networking/Endpoint;", "Ljava/util/Map;",
+        "Ljava/util/List;", "Ljava/util/Map;", "Z", "Ljava/util/List;", "I"),
+        "Lcom/revenuecat/purchases/common/networking/HTTPResult;", 17,
+        "$REVENUE_HTTP->performCall(Ljava/net/URL;ZLcom/revenuecat/purchases/common/networking/Endpoint;Ljava/util/Map;Ljava/util/List;Ljava/util/Map;Z)Lcom/revenuecat/purchases/common/networking/HTTPResult;",
+        REVENUE_DISABLED))
+    add(callTarget(REVENUE_HTTP, "getConnection",
+        listOf("Lcom/revenuecat/purchases/common/networking/HTTPRequest;", "J"),
+        "Ljava/net/HttpURLConnection;", 18,
+        "Ljava/net/URL;->openConnection()Ljava/net/URLConnection;", REVENUE_DISABLED))
+    add(callTarget(REVENUE_DIAGNOSTICS, "trackEvent",
+        listOf("Lcom/revenuecat/purchases/common/diagnostics/DiagnosticsEntry;"), "V", 17,
+        "$REVENUE_DIAGNOSTICS->checkAndClearDiagnosticsFileIfTooBig(Llv7;)V"))
+    add(callTarget(REVENUE_DIAGNOSTICS, "trackEventInCurrentThread\$purchases_defaultsBc8Release",
+        listOf("Lcom/revenuecat/purchases/common/diagnostics/DiagnosticsEntry;"), "V", 17,
+        "Lcom/revenuecat/purchases/utils/EventsFileHelper;->appendEvent(Lcom/revenuecat/purchases/utils/Event;)V"))
     // Keep base lifecycle bookkeeping. Skip both subclass startup and shutdown:
     // legacy teardown otherwise dereferences a handler that was never initialized.
     for (clazz in listOf(PROTO, USAGE, KIOSK, ADVERT, SCAN, LEGACY)) {
@@ -170,7 +197,8 @@ private val telemetryTargets = buildList {
 val disableTelemetryPatch = bytecodePatch(
     name = "Disable telemetry",
     description = "Stops Yanosik's usage analytics, ad statistics and location targeting, Wi-Fi/app scans, ProxiCloud tracking, " +
-        "Notinote sample uploads, Firebase analytics and crash uploads, and Facebook app events. Online navigation and account " +
+        "Notinote sample uploads, Firebase analytics and crash uploads, Facebook app events, and RevenueCat requests and diagnostics. " +
+        "RevenueCat purchases and subscription syncing are disabled too. Online navigation and account " +
         "requests still send the data they need; this isn't an offline mode or a network-wide blocker."
 ) {
     compatibleWith(COMPATIBILITY_YANOSIK)

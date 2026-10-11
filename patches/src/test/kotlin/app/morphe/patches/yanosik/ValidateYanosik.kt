@@ -50,13 +50,16 @@ private val changedMethods = setOf(
     "Lo6f;->a(Lh9f;Llv7;Lu1c;ZLy93;II)V",
     "Lm1a;->i(Lb4f;Ly93;I)V",
     "Lso8;->n(Ln8g;I)V",
+    "Lpl/neptis/yanosik/mobi/android/dashboard/dashboardpack/activity/DashboardPackActivity;->onCreate(Landroid/os/Bundle;)V",
+    "Ly8;->c(Ll44;Ly93;)J",
+    "Lpl/neptis/features/login/AccountStartActivity;->onCreate(Landroid/os/Bundle;)V",
     "Lpl/neptis/user/ui/premium/PremiumActivity;->onCreate(Landroid/os/Bundle;)V",
     "Lr5f;->b(Lr5f;Lcom/revenuecat/purchases/EntitlementInfos;)Lh6f;",
     "Lr5f;-><init>(Lkp3;Landroid/content/Context;)V",
     "Ll9f;-><init>(ZZLh9f;)V",
     "La6f;-><init>(Lh6f;ZZLh9f;)V",
     "Lpl/neptis/features/settings/AppPreferenceActivity;->setupNoAdvSection()V"
-) + telemetryMethodDescriptors
+) + telemetryMethodDescriptors + settingsDonationObserverDescriptor
 
 private fun descriptor(method: Method) =
     "${method.definingClass}->${method.name}(${method.parameterTypes.joinToString("")})${method.returnType}"
@@ -260,6 +263,7 @@ fun validateReferenceApk(apk: File, workspace: File) {
         val resourcesApk = requireNotNull(requireNotNull(result.resources).resourcesApk)
         resourcesApk.copyTo(File(workspace, "validated-resources.apk"), overwrite = true)
         verifyTelemetryManifest(apk, resourcesApk)
+        verifySettingsDonationResources(apk, resourcesApk)
         ZipFile(resourcesApk).use { zip ->
             val entries = zip.entries().asSequence().filter { it.name.endsWith("/vibe_patched.png") }.toList()
             check(entries.size == 1) { "Missing or duplicate compiled Vibe Patched icon" }
@@ -271,6 +275,7 @@ fun validateReferenceApk(apk: File, workspace: File) {
             println("PASS compiled Vibe Patched drawable")
         }
         val changed = mutableSetOf<String>()
+        val extensionMethods = mutableListOf<Method>()
         var untouched = 0
         for (output in result.dexFiles) {
             val bytes = output.stream.use { it.readBytes() }
@@ -279,15 +284,24 @@ fun validateReferenceApk(apk: File, workspace: File) {
             val dex = DexFileFactory.loadDexFile(saved, opcodes)
             for (method in dex.classes.flatMap { it.methods }) {
                 val key = descriptor(method)
+                if (key in vibeSettingsExtensionDescriptors) {
+                    check(key !in originals) { "Extension unexpectedly replaces an existing app method: $key" }
+                    extensionMethods += method
+                    continue
+                }
                 val original = originals[key] ?: error("Unexpected added method: $key")
                 if (key in changedMethods) {
                     changed += key
                     val ops = instructions(method)
                     when {
                         key == "Lso8;->n(Ln8g;I)V" -> verifyHomePatchedTileGuard(method, original)
+                        key == "Ly8;->c(Ll44;Ly93;)J" -> verifyHomeSidebarPalette(method, original)
+                        key.contains("/DashboardPackActivity;->onCreate") -> verifyHomeThemeInstall(method, original)
+                        key.contains("/AccountStartActivity;->onCreate") -> verifyAccountThemeInstall(method, original)
                         key == "Lzr;->R(Lsva;Lwq;Z)V" || key == ADVERTISING_CAMPAIGN_VOICE_METHOD ->
                             verifyVoiceAdsMethod(method, original)
                         key in telemetryMethodDescriptors -> verifyTelemetryMethod(method, original)
+                        key == settingsDonationObserverDescriptor -> verifySettingsDonationObserver(method, original)
                         key.contains("/premium/PremiumActivity;->onCreate") -> {
                             check(semanticOutline(method).take(2) == semanticOutline(original).take(2))
                             verifyPremiumScreenControlFlow(method)
@@ -394,6 +408,7 @@ fun validateReferenceApk(apk: File, workspace: File) {
             }
         }
         check(changed == changedMethods) { "Missing patched methods: ${changedMethods - changed}" }
+        verifyVibeSettingsExtension(extensionMethods)
         println("PASS DEX serialization: ${changed.size} intended methods, $untouched unchanged method outlines")
     }
     // Separate patcher: ensure a renamed/missing target fails, with no silent success.
@@ -412,6 +427,7 @@ fun validateReferenceApk(apk: File, workspace: File) {
         check(failed) { "Missing fingerprint did not fail" }
     }
     println("PASS missing-target failure")
+    verifySettingsDonationResourceFailures()
     for ((packageName, version) in listOf(PACKAGE_NAME to "26.8.0", "other.app" to VERSION_NAME)) {
         check(runCatching { requireReferenceVersion(packageName, version) }.exceptionOrNull()?.message
             ?.contains("Yanosik patches require") == true)

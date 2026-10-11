@@ -43,7 +43,7 @@ All modifications made by Morphe, along with their dates, can be found in the Gi
 Here's what each patch does. The descriptions below also show up in Morphe Manager, so you'll see the same wording when choosing patches. For the technical details and what's been tested, see the [Yanosik notes](docs/yanosik.md).
 
 <!-- PATCHES_START -->
-> **[v1.0.0](https://github.com/cfels/vibe-patches/releases/tag/v1.0.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;11 patches total
+> **[v1.2.0](https://github.com/cfels/vibe-patches/releases/tag/v1.2.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;11 patches total
 <details open>
 <summary>📦 Yanosik&nbsp;&nbsp;•&nbsp;&nbsp;6 patches</summary>
 <br>
@@ -56,11 +56,11 @@ Here's what each patch does. The descriptions below also show up in Morphe Manag
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
 | [Disable startup ad campaigns](#disable-startup-ad-campaigns) | Skips the ad campaigns shown when you open Yanosik, even ones already saved on your phone. Normal startup messages and account checks stay as they are. |  |
-| [Disable telemetry](#disable-telemetry) | Stops Yanosik's usage analytics, ad statistics and location targeting, Wi-Fi/app scans, ProxiCloud tracking, Notinote sample uploads, Firebase analytics and crash uploads, and Facebook app events. Online navigation and account requests still send the data they need; this isn't an offline mode or a network-wide blocker. |  |
+| [Disable telemetry](#disable-telemetry) | Stops Yanosik's usage analytics, ad statistics and location targeting, Wi-Fi/app scans, ProxiCloud tracking, Notinote sample uploads, Firebase analytics and crash uploads, Facebook app events, and RevenueCat requests and diagnostics. RevenueCat purchases and subscription syncing are disabled too. Online navigation and account requests still send the data they need; this isn't an offline mode or a network-wide blocker. |  |
 | [Disable voice ads](#disable-voice-ads) | Mutes sponsored voice ads and spoken ad campaigns so they don't interrupt your drive. You still get navigation directions and road warnings, with the same audio controls. |  |
 | [Hide banner ads](#hide-banner-ads) | Gets rid of banner ads on the map, during navigation and on the dashboard, including ad placeholders. Keeps road alerts and route controls in place. |  |
 | [Override local PRO checks](#override-local-pro-checks) | Keeps local PRO mode on and opens up the PRO settings. Hides the Switch to PRO toggle. Purchases and server-side perks aren't changed. |  |
-| [Suppress Premium promotions](#suppress-premium-promotions) | Replaces the home PRO shortcut with your Vibe Patched icon that does nothing when tapped. Hides PRO promo cards and the sidebar upgrade card, and closes the PRO page. Donation and voucher pages stay available. |  |
+| [Suppress Premium promotions](#suppress-premium-promotions) | Replaces the home PRO shortcut with Vibe settings. Dark mode starts on, uses #1f1e1f on your home screen, sidebar and login screens, and remembers your choice. Hides PRO promo cards, the sidebar upgrade card and donation prompts in settings, and closes the PRO page. Direct donation and voucher pages stay available. |  |
 
 </details>
 

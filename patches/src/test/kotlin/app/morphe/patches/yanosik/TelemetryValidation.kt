@@ -55,7 +55,11 @@ internal val telemetryMethodDescriptors = telemetryLifecycleClasses.flatMap { cl
     "Lcom/google/firebase/crashlytics/FirebaseCrashlytics;->recordException(Ljava/lang/Throwable;)V",
     "Lx5l;->b()Z", "Lx5l;->a()Z",
     "Lfp0;->e(Ljava/lang/String;Ljava/lang/Double;Landroid/os/Bundle;ZLjava/util/UUID;Lxgd;)V",
-    "Lko0;->d(Lr47;)V"
+    "Lko0;->d(Lr47;)V",
+    "Lcom/revenuecat/purchases/common/HTTPClient;->performRequest(Ljava/net/URL;Lcom/revenuecat/purchases/common/networking/Endpoint;Ljava/util/Map;Ljava/util/List;Ljava/util/Map;ZLjava/util/List;I)Lcom/revenuecat/purchases/common/networking/HTTPResult;",
+    "Lcom/revenuecat/purchases/common/HTTPClient;->getConnection(Lcom/revenuecat/purchases/common/networking/HTTPRequest;J)Ljava/net/HttpURLConnection;",
+    "Lcom/revenuecat/purchases/common/diagnostics/DiagnosticsTracker;->trackEvent(Lcom/revenuecat/purchases/common/diagnostics/DiagnosticsEntry;)V",
+    "Lcom/revenuecat/purchases/common/diagnostics/DiagnosticsTracker;->trackEventInCurrentThread\$purchases_defaultsBc8Release(Lcom/revenuecat/purchases/common/diagnostics/DiagnosticsEntry;)V"
 )
 
 internal fun verifyTelemetryMethod(method: Method, original: Method) {
@@ -103,6 +107,22 @@ internal fun verifyTelemetryMethod(method: Method, original: Method) {
         return
     }
     val prefixSize = when {
+        method.definingClass == "Lcom/revenuecat/purchases/common/HTTPClient;" -> {
+            check(ops.take(4).map { it.opcode } == listOf(Opcode.NEW_INSTANCE, Opcode.CONST_STRING,
+                Opcode.INVOKE_DIRECT, Opcode.THROW))
+            check((ops[0] as ReferenceInstruction).reference.toString() == "Ljava/io/IOException;")
+            check((ops[0] as OneRegisterInstruction).registerA == 0)
+            check((ops[1] as ReferenceInstruction).reference.toString() == "RevenueCat requests disabled by Vibe")
+            check((ops[1] as OneRegisterInstruction).registerA == 1)
+            check((ops[2] as ReferenceInstruction).reference.toString() ==
+                "Ljava/io/IOException;-><init>(Ljava/lang/String;)V")
+            check((ops[2] as FiveRegisterInstruction).let { it.registerCount == 2 && it.registerC == 0 && it.registerD == 1 })
+            check((ops[3] as OneRegisterInstruction).registerA == 0)
+            check(method.accessFlags == if (method.name == "getConnection") 18 else 17)
+            check(method.implementation!!.registerCount == if (method.name == "getConnection") 6 else 26)
+            println("PASS RevenueCat ${method.name}: local IOException before original request/connection code")
+            4
+        }
         method.definingClass == "Lcloud/proxi/ProxiCloudSdk;" || method.definingClass.startsWith("Lcloud/proxi/sdk/") -> {
             val result = if (method.definingClass == "Lcloud/proxi/ProxiCloudSdk;") "Lc06;" else "Lksa;"
             check(ops.take(3).map { it.opcode } == listOf(Opcode.NEW_INSTANCE, Opcode.INVOKE_DIRECT, Opcode.RETURN_OBJECT))

@@ -22,15 +22,15 @@ internal fun verifyHomePatchedTileGuard(method: Method, original: Method) {
     val ops = method.implementation!!.instructions.toList()
     val before = original.implementation!!.instructions.toList()
     val startIndex = 101
-    val count = 35
+    val count = 17
     fun outline(instructions: List<Instruction>) = instructions.map {
         it.opcode.name + if (it is ReferenceInstruction) ":${it.reference}" else ""
     }
     check(outline(ops.take(startIndex) + ops.drop(startIndex + count)) == outline(before)) {
         "Home tile patch changed code outside its renderer guard"
     }
-    check(ops[startIndex + 33].opcode == Opcode.RETURN_VOID)
-    check(ops[startIndex + 34].opcode == Opcode.NOP)
+    check(ops[startIndex + 15].opcode == Opcode.RETURN_VOID)
+    check(ops[startIndex + 16].opcode == Opcode.NOP)
     check(ops[startIndex + count].opcode == Opcode.IF_EQZ &&
         (ops[startIndex + count] as OneRegisterInstruction).registerA == 7)
     val addresses = IntArray(ops.size)
@@ -93,50 +93,22 @@ internal fun verifyHomePatchedTileGuard(method: Method, original: Method) {
                     pc = next
                 }
                 Opcode.CHECK_CAST -> pc = next
-                Opcode.INVOKE_VIRTUAL -> {
+                Opcode.INVOKE_STATIC, Opcode.INVOKE_VIRTUAL -> {
                     val invoke = op as FiveRegisterInstruction
                     val args = listOf(invoke.registerC, invoke.registerD, invoke.registerE,
                         invoke.registerF, invoke.registerG).take(invoke.registerCount).map { registers[it] }
                     val reference = (op as ReferenceInstruction).reference.toString()
-                    result = when (reference) {
-                        "Landroid/widget/TextView;->setTextColor(I)V" -> {
-                            check(args == listOf("text", -1234567)); effects["color"] = args[1]; null
-                        }
-                        "Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V" -> {
-                            check(args == listOf("text", "Vibe Patched")); effects["label"] = args[1]; null
-                        }
-                        "Landroid/view/View;->getContext()Landroid/content/Context;" -> {
-                            check(args == listOf("image")); "context"
-                        }
-                        "Landroid/content/Context;->getResources()Landroid/content/res/Resources;" -> {
-                            check(args == listOf("context")); "resources"
-                        }
-                        "Landroid/content/Context;->getPackageName()Ljava/lang/String;" -> {
-                            check(args == listOf("context")); "pl.neptis.yanosik.mobi.android"
-                        }
-                        "Landroid/content/res/Resources;->getIdentifier(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I" -> {
-                            check(args == listOf("resources", "vibe_patched", "drawable", "pl.neptis.yanosik.mobi.android"))
-                            0x7f999001
-                        }
-                        "Landroid/widget/ImageView;->setImageResource(I)V" -> {
-                            check(args == listOf("image", 0x7f999001)); effects["image"] = args[1]; null
-                        }
-                        "Landroid/view/View;->setOnClickListener(Landroid/view/View\$OnClickListener;)V" -> {
-                            check(args == listOf("tile", 0)); effects["listener"] = null; null
-                        }
-                        "Landroid/view/View;->setClickable(Z)V" -> {
-                            check(args == listOf("tile", 0)); effects["clickable"] = false; null
+                    when (reference) {
+                        "Lapp/morphe/extension/yanosik/VibeSettings;->bindTile(Landroid/view/View;Landroid/view/View;Landroid/view/View;I)V" -> {
+                            check(args == listOf("text", "image", "tile", -1234567))
+                            effects["settings binding"] = true
                         }
                         "Landroid/view/View;->setVisibility(I)V" -> {
-                            check(args in listOf(listOf("image", 0), listOf("badge", 8), listOf("folder", 8)))
-                            effects["${args[0]} visibility"] = args[1]; null
+                            check(args in listOf(listOf("badge", 8), listOf("folder", 8)))
+                            effects["${args[0]} visibility"] = args[1]
                         }
                         else -> error("Unexpected patched tile call: $reference")
                     }
-                    pc = next
-                }
-                Opcode.MOVE_RESULT, Opcode.MOVE_RESULT_OBJECT -> {
-                    registers[(op as OneRegisterInstruction).registerA] = result
                     pc = next
                 }
                 Opcode.RETURN_VOID -> replaced = true
@@ -146,8 +118,7 @@ internal fun verifyHomePatchedTileGuard(method: Method, original: Method) {
         }
         check(replaced == (action == 68 || action == 70)) { "Incorrect patched tile action: $action" }
         if (replaced) {
-            check(effects.keys == setOf("color", "label", "image", "image visibility",
-                "listener", "clickable", "badge visibility", "folder visibility"))
+            check(effects.keys == setOf("settings binding", "badge visibility", "folder visibility"))
             check(registers[2] == saved[2] && registers[7] == saved[7] && registers[8] == saved[8])
         } else {
             check(effects.isEmpty())
@@ -156,5 +127,5 @@ internal fun verifyHomePatchedTileGuard(method: Method, original: Method) {
             }
         }
     }
-    println("PASS serialized home PRO tile: Vibe Patched icon/label, inert tap; other actions/null unchanged")
+    println("PASS serialized home PRO tile: local Vibe settings binding; other actions/null unchanged")
 }

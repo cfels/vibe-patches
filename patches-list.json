@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "patches": [
     {
       "name": "Change installer source",
@@ -110,7 +110,7 @@
     },
     {
       "name": "Disable telemetry",
-      "description": "Stops Yanosik's usage analytics, ad statistics and location targeting, Wi-Fi/app scans, ProxiCloud tracking, Notinote sample uploads, Firebase analytics and crash uploads, and Facebook app events. Online navigation and account requests still send the data they need; this isn't an offline mode or a network-wide blocker.",
+      "description": "Stops Yanosik's usage analytics, ad statistics and location targeting, Wi-Fi/app scans, ProxiCloud tracking, Notinote sample uploads, Firebase analytics and crash uploads, Facebook app events, and RevenueCat requests and diagnostics. RevenueCat purchases and subscription syncing are disabled too. Online navigation and account requests still send the data they need; this isn't an offline mode or a network-wide blocker.",
       "default": true,
       "category": null,
       "dependencies": [
@@ -247,11 +247,12 @@
     },
     {
       "name": "Suppress Premium promotions",
-      "description": "Replaces the home PRO shortcut with your Vibe Patched icon that does nothing when tapped. Hides PRO promo cards and the sidebar upgrade card, and closes the PRO page. Donation and voucher pages stay available.",
+      "description": "Replaces the home PRO shortcut with Vibe settings. Dark mode starts on, uses #1f1e1f on your home screen, sidebar and login screens, and remembers your choice. Hides PRO promo cards, the sidebar upgrade card and donation prompts in settings, and closes the PRO page. Direct donation and voucher pages stay available.",
       "default": true,
       "category": null,
       "dependencies": [
         "BytecodePatch",
+        "ResourcePatch",
         "ResourcePatch"
       ],
       "compatiblePackages": [

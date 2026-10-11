@@ -7,6 +7,7 @@ package app.morphe.patches.yanosik.promotions
 
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructionsWithLabels
+import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.getInstruction
 import app.morphe.patcher.fieldAccess
 import app.morphe.patcher.methodCall
@@ -18,6 +19,126 @@ import com.android.tools.smali.dexlib2.iface.instruction.NarrowLiteralInstructio
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.TwoRegisterInstruction
+
+internal const val VIBE_SETTINGS_CLASS = "Lapp/morphe/extension/yanosik/VibeSettings;"
+
+internal object AccountThemeFingerprint : Fingerprint(
+    definingClass = "Lpl/neptis/features/login/AccountStartActivity;",
+    name = "onCreate", returnType = "V", parameters = listOf("Landroid/os/Bundle;"),
+    accessFlags = listOf(AccessFlags.PUBLIC, AccessFlags.FINAL),
+    filters = listOf(
+        methodCall(smali = "Lpl/neptis/features/login/AccountStartActivity;->A0(Landroid/os/Bundle;)V"),
+        fieldAccess(opcode = Opcode.IGET_OBJECT, smali = "Lch;->a:Landroid/widget/RelativeLayout;"),
+        methodCall(smali = "Lo0;->setContentView(Landroid/view/View;)V")
+    )
+)
+
+internal fun installAccountTheme(method: MutableMethod) {
+    val view = method.getInstruction<TwoRegisterInstruction>(28)
+    if (method.implementation!!.registerCount != 8 || method.accessFlags != 17 ||
+        method.getInstruction<ReferenceInstruction>(15).reference.toString() !=
+        "Lpl/neptis/features/login/AccountStartActivity;->A0(Landroid/os/Bundle;)V" ||
+        method.getInstruction<ReferenceInstruction>(28).reference.toString() != "Lch;->a:Landroid/widget/RelativeLayout;" ||
+        view.registerA != 0 || view.registerB != 0 ||
+        method.getInstruction<ReferenceInstruction>(29).reference.toString() != "Lo0;->setContentView(Landroid/view/View;)V" ||
+        method.getInstruction(30).opcode != Opcode.IF_NEZ ||
+        (method.getInstruction(30) as OneRegisterInstruction).registerA != 7)
+        throw PatchException("Yanosik account host lifecycle layout changed; refusing to patch.")
+    method.addInstructions(30, "invoke-static { p0 }, $VIBE_SETTINGS_CLASS->install(Landroid/app/Activity;)V")
+}
+
+internal object HomeThemeFingerprint : Fingerprint(
+    definingClass = "Lpl/neptis/yanosik/mobi/android/dashboard/dashboardpack/activity/DashboardPackActivity;",
+    name = "onCreate", returnType = "V", parameters = listOf("Landroid/os/Bundle;"),
+    accessFlags = listOf(AccessFlags.PUBLIC, AccessFlags.FINAL),
+    filters = listOf(
+        fieldAccess(opcode = Opcode.IPUT_OBJECT,
+            smali = "Lpl/neptis/yanosik/mobi/android/dashboard/dashboardpack/activity/DashboardPackActivity;->U:Landroid/os/Handler;"),
+        methodCall(smali = "Lo0;->setContentView(Landroid/view/View;)V")
+    )
+)
+
+internal object HomeSidebarPaletteFingerprint : Fingerprint(
+    definingClass = "Ly8;", name = "c", returnType = "J",
+    parameters = listOf("Ll44;", "Ly93;"),
+    accessFlags = listOf(AccessFlags.PUBLIC, AccessFlags.STATIC, AccessFlags.FINAL),
+    filters = listOf(
+        fieldAccess(opcode = Opcode.SGET_OBJECT, smali = "Ls90;->a:Lsb3;"),
+        methodCall(smali = "Lyz7;->j(Lwgf;)Ljava/lang/Object;"),
+        fieldAccess(opcode = Opcode.IGET_WIDE, smali = "Ll44;->b:J"),
+        fieldAccess(opcode = Opcode.IGET_WIDE, smali = "Ll44;->a:J")
+    )
+)
+
+// The map shortcut uses these two foreground palettes on its red Brand surface.
+// Verify their original producers before referencing their identities in the guard.
+internal object HomeMapTitlePaletteFingerprint : Fingerprint(
+    definingClass = "Lt44;", name = "<clinit>", returnType = "V", parameters = emptyList(),
+    accessFlags = listOf(AccessFlags.STATIC, AccessFlags.CONSTRUCTOR),
+    filters = listOf(
+        fieldAccess(opcode = Opcode.SGET_OBJECT, smali = "Lg54;->b:Ll44;"),
+        fieldAccess(opcode = Opcode.SPUT_OBJECT, smali = "Lt44;->b:Ll44;")
+    )
+)
+
+internal object HomeMapDescriptionPaletteFingerprint : Fingerprint(
+    definingClass = "Lx44;", name = "<clinit>", returnType = "V", parameters = emptyList(),
+    accessFlags = listOf(AccessFlags.STATIC, AccessFlags.CONSTRUCTOR),
+    filters = listOf(
+        fieldAccess(opcode = Opcode.SGET_OBJECT, smali = "Li54;->a:Ll44;"),
+        fieldAccess(opcode = Opcode.SPUT_OBJECT, smali = "Lx44;->a:Ll44;")
+    )
+)
+
+internal fun installHomeTheme(method: MutableMethod) {
+    val call = method.getInstruction<ReferenceInstruction>(24)
+    if (method.implementation!!.registerCount != 22 || method.accessFlags != 17 ||
+        call.reference.toString() != "Lo0;->setContentView(Landroid/view/View;)V" ||
+        method.getInstruction(25).opcode != Opcode.INVOKE_VIRTUAL ||
+        method.getInstruction<ReferenceInstruction>(25).reference.toString() !=
+        "Landroid/app/Activity;->getIntent()Landroid/content/Intent;")
+        throw PatchException("Yanosik dashboard lifecycle layout changed; refusing to patch.")
+    // p0 is v20; /range avoids the 4-bit invoke limit without modifying any registers.
+    method.addInstructions(25, "invoke-static/range { p0 .. p0 }, $VIBE_SETTINGS_CLASS->install(Landroid/app/Activity;)V")
+}
+
+internal fun installHomeSidebarPalette(method: MutableMethod) {
+    val instructions = method.implementation!!.instructions.toList()
+    if (method.implementation!!.registerCount != 5 || method.accessFlags != 25 ||
+        instructions.size != 27 || instructions[0].opcode != Opcode.INVOKE_VIRTUAL ||
+        (instructions[23] as? ReferenceInstruction)?.reference.toString() != "Ll44;->b:J" ||
+        (instructions[25] as? ReferenceInstruction)?.reference.toString() != "Ll44;->a:J")
+        throw PatchException("Yanosik Compose palette layout changed; refusing to patch.")
+    // LocalContext binds the guard to this composition's actual activity. The extension
+    // accepts only the dashboard/login hosts, never map/navigation activities.
+    // v0-v2 are unused at entry; p0/p1 are preserved on the normal continuing path.
+    method.addInstructionsWithLabels(0, """
+        check-cast p1, Lyz7;
+        sget-object v0, Ls90;->b:Lb5j;
+        invoke-virtual { p1, v0 }, Lyz7;->j(Lwgf;)Ljava/lang/Object;
+        move-result-object v0
+        check-cast v0, Landroid/content/Context;
+        invoke-static { v0 }, $VIBE_SETTINGS_CLASS->useDark(Landroid/content/Context;)Z
+        move-result v1
+        if-eqz v1, :morphe_original_palette
+        sget-object v0, Lt44;->b:Ll44;
+        if-eq p0, v0, :morphe_map_foreground
+        sget-object v0, Lx44;->a:Ll44;
+        if-ne p0, v0, :morphe_dark_colors
+        :morphe_map_foreground
+        iget-wide v0, p0, Ll44;->a:J
+        return-wide v0
+        :morphe_dark_colors
+        nop
+        iget-wide v1, p0, Ll44;->b:J
+        iget-wide v3, p0, Ll44;->a:J
+        invoke-static { v3, v4, v1, v2 }, $VIBE_SETTINGS_CLASS->darkComposeColor(JJ)J
+        move-result-wide v1
+        return-wide v1
+        :morphe_original_palette
+        nop
+    """)
+}
 
 internal object HomePatchedTileFingerprint : Fingerprint(
     definingClass = "Lso8;", name = "n", returnType = "V",
@@ -63,28 +184,10 @@ internal fun replaceHomeProTile(method: MutableMethod) {
         if-ne v5, v6, :morphe_continue_home_tile
         :morphe_bind_patched_tile
         iget-object v0, v2, Lpf;->c:Landroid/view/View;
-        check-cast v0, Landroid/widget/TextView;
-        iget v1, v7, Lco8;->h:I
-        invoke-virtual { v0, v1 }, Landroid/widget/TextView;->setTextColor(I)V
-        const-string v1, "Vibe Patched"
-        invoke-virtual { v0, v1 }, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-        iget-object v0, v2, Lpf;->b:Landroid/view/View;
-        check-cast v0, Landroid/widget/ImageView;
-        invoke-virtual { v0 }, Landroid/view/View;->getContext()Landroid/content/Context;
-        move-result-object v1
-        invoke-virtual { v1 }, Landroid/content/Context;->getResources()Landroid/content/res/Resources;
-        move-result-object v5
-        invoke-virtual { v1 }, Landroid/content/Context;->getPackageName()Ljava/lang/String;
-        move-result-object v6
-        const-string v1, "vibe_patched"
-        const-string v9, "drawable"
-        invoke-virtual { v5, v1, v9, v6 }, Landroid/content/res/Resources;->getIdentifier(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
-        move-result v1
-        invoke-virtual { v0, v1 }, Landroid/widget/ImageView;->setImageResource(I)V
-        invoke-virtual { v0, v3 }, Landroid/view/View;->setVisibility(I)V
-        iget-object v0, v2, Lpf;->d:Landroid/view/View;
-        invoke-virtual { v0, v3 }, Landroid/view/View;->setOnClickListener(Landroid/view/View${'$'}OnClickListener;)V
-        invoke-virtual { v0, v3 }, Landroid/view/View;->setClickable(Z)V
+        iget-object v1, v2, Lpf;->b:Landroid/view/View;
+        iget-object v5, v2, Lpf;->d:Landroid/view/View;
+        iget v6, v7, Lco8;->h:I
+        invoke-static { v0, v1, v5, v6 }, $VIBE_SETTINGS_CLASS->bindTile(Landroid/view/View;Landroid/view/View;Landroid/view/View;I)V
         iget-object v0, v2, Lpf;->f:Landroid/view/View;
         invoke-virtual { v0, v4 }, Landroid/view/View;->setVisibility(I)V
         iget-object v0, v2, Lpf;->g:Landroid/view/View;

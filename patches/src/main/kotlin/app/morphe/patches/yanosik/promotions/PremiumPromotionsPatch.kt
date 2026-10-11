@@ -115,14 +115,21 @@ internal const val PREMIUM_PROMOTION_GUARD = """
 @Suppress("unused")
 val suppressPremiumPromotionsPatch = bytecodePatch(
     name = "Suppress Premium promotions",
-    description = "Replaces the home PRO shortcut with your Vibe Patched icon that does nothing when tapped. " +
-        "Hides PRO promo cards and the sidebar upgrade card, and closes the PRO page. " +
-        "Donation and voucher pages stay available."
+    description = "Replaces the home PRO shortcut with Vibe settings. Dark mode starts on, uses #1f1e1f on your home screen, sidebar and login screens, and remembers your choice. " +
+        "Hides PRO promo cards, the sidebar upgrade card and donation prompts in settings, and closes the PRO page. " +
+        "Direct donation and voucher pages stay available."
 ) {
     compatibleWith(COMPATIBILITY_YANOSIK)
-    dependsOn(referenceVersionPatch, homePatchedTileResourcesPatch)
+    dependsOn(referenceVersionPatch, homePatchedTileResourcesPatch, hideSettingsDonationResourcesPatch)
+    extendWith("extensions/yanosik/vibe-settings.mpe")
     execute {
         val homeTile = HomePatchedTileFingerprint.method
+        val homeTheme = HomeThemeFingerprint.method
+        val accountTheme = AccountThemeFingerprint.method
+        val sidebarPalette = HomeSidebarPaletteFingerprint.method
+        HomeMapTitlePaletteFingerprint.method
+        HomeMapDescriptionPaletteFingerprint.method
+        val donationObserver = SettingsDonationObserverFingerprint.method
         val sidebar = SidebarPremiumCardFingerprint.method
         val activity = PremiumActivityFingerprint.method
         if (sidebar.implementation!!.registerCount != 24 || activity.implementation!!.registerCount != 11 ||
@@ -154,5 +161,9 @@ val suppressPremiumPromotionsPatch = bytecodePatch(
         sidebar.addInstructions(0, "return-void")
         activity.addInstructionsWithLabels(2, PREMIUM_SCREEN_GUARD)
         replaceHomeProTile(homeTile)
+        installHomeTheme(homeTheme)
+        installAccountTheme(accountTheme)
+        installHomeSidebarPalette(sidebarPalette)
+        hideSettingsDonationObserver(donationObserver)
     }
 }
