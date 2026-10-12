@@ -1,5 +1,11 @@
 # Yanosik validation
 
+## Metadata dependency ordering — 12 October 2026
+
+The push/PR metadata check failed because CI's library exporter already emitted `dependencies` before `compatiblePackages`, while the local exporter appended it after `options`. Gson replaces an existing member without moving it. The wrapper now removes that member before appending the compiled dependency values, giving both exporters the same order. The strict generated-diff check remains unchanged.
+
+Reproduced the reported order-only diff in an isolated JVM fixture: JSON values matched but bytes differed before the fix. After the fix, both exporter layouts matched the checked-in index byte-for-byte across two runs each. All seven automation tests and whitespace checks passed. No version bump, metadata-value change, APK build/test or patch behavior change was needed.
+
 ## Manual version and metadata automation — 12 October 2026
 
 Release preparation now runs only through manual dispatch on main, with patch/minor/major selection. `gradle.properties` remains the canonical version. The existing preparation script supports regeneration, `--bump` and `--check`; it calls the existing library exporter and README generator, derives the Morphe URL/description from `patches.about`, and preserves timestamps for unchanged versions. Ordinary push/PR CI fails on generated diffs without committing. The manual workflow commits only the version, index, Morphe JSON and README through the repository token with `[skip ci]`. Semantic-release, its release-only npm dependencies and the npm Dependabot entry were removed. Matching bundle build/upload remains separate.

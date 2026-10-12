@@ -27,6 +27,7 @@ class ExportPatchMetadata {
                 dependencies.add(dependency.getName() == null
                         ? dependency.getClass().getSimpleName() : dependency.getName());
             }
+            object.remove("dependencies");
             object.add("dependencies", dependencies);
         }
         Files.writeString(path, new GsonBuilder().setPrettyPrinting().serializeNulls()
