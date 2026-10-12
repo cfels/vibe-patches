@@ -115,7 +115,7 @@ internal const val PREMIUM_PROMOTION_GUARD = """
 @Suppress("unused")
 val suppressPremiumPromotionsPatch = bytecodePatch(
     name = "Vibe settings and fewer PRO prompts",
-    description = "Open Vibe settings from the home screen and choose a saved dark theme with a Material 3 toggle. " +
+    description = "Open Vibe settings from the home screen and choose a saved dark theme for home, login, search and maps with a Material 3 toggle. " +
         "Dark mode starts on. Hides PRO upgrade cards and purchase pages, plus donation prompts in settings. " +
         "Direct donation and voucher pages still open."
 ) {
@@ -127,6 +127,11 @@ val suppressPremiumPromotionsPatch = bytecodePatch(
         val homeTheme = HomeThemeFingerprint.method
         val accountTheme = AccountThemeFingerprint.method
         val sidebarPalette = HomeSidebarPaletteFingerprint.method
+        val mapTheme = MapThemeFingerprint.method
+        val mapKeys = MapThemeKeysFingerprint.method
+        val mapRegister = MapThemeRegisterFingerprint.method
+        val mapUnregister = MapThemeUnregisterFingerprint.method
+        MapThemeContextFingerprint.method
         HomeMapTitlePaletteFingerprint.method
         HomeMapDescriptionPaletteFingerprint.method
         val donationObserver = SettingsDonationObserverFingerprint.method
@@ -164,6 +169,7 @@ val suppressPremiumPromotionsPatch = bytecodePatch(
         installHomeTheme(homeTheme)
         installAccountTheme(accountTheme)
         installHomeSidebarPalette(sidebarPalette)
+        installMapTheme(mapTheme, mapKeys, mapRegister, mapUnregister)
         hideSettingsDonationObserver(donationObserver)
     }
 }

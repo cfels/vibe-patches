@@ -1,5 +1,6 @@
 {
   pkgs ? import <nixpkgs> { },
+  runScript ? "bash",
 }:
 
 (pkgs.buildFHSEnv {
@@ -9,6 +10,7 @@
       jdk21
       android-tools
       scrcpy
+      procps
       python3
       curl
       unzip
@@ -54,9 +56,10 @@
       systemd
       xkeyboard_config
     ];
-  runScript = "bash";
+  inherit runScript;
   profile = ''
     export JAVA_HOME=${pkgs.jdk21}
+    export VIBE_NIX_SHELL=1
     export ANDROID_HOME="''${ANDROID_HOME:-$HOME/Android/Sdk}"
     export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
     export QT_XKB_CONFIG_ROOT=${pkgs.xkeyboard_config}/share/X11/xkb

@@ -33,6 +33,10 @@ internal val vibeSettingsExtensionDescriptors = setOf(
     "$SETTINGS->bindTile(Landroid/view/View;Landroid/view/View;Landroid/view/View;I)V",
     "$SETTINGS->darkComposeColor(JJ)J", "$SETTINGS->install(Landroid/app/Activity;)V",
     "$SETTINGS->preferences(Landroid/content/Context;)Landroid/content/SharedPreferences;",
+    "$SETTINGS->mapDark(Landroid/content/Context;)Z",
+    "$SETTINGS->mapPreferenceKeys(Ljava/util/Set;)Ljava/util/Set;",
+    "$SETTINGS->registerMapTheme(Landroid/content/Context;Landroid/content/SharedPreferences\$OnSharedPreferenceChangeListener;)V",
+    "$SETTINGS->unregisterMapTheme(Landroid/content/Context;Landroid/content/SharedPreferences\$OnSharedPreferenceChangeListener;)V",
     "$SETTINGS->showSettings(Landroid/content/Context;)V", "$SETTINGS->useDark(Landroid/content/Context;)Z",
     "$CLICK-><init>(Landroid/app/AlertDialog;)V", "$CLICK->onClick(Landroid/view/View;)V",
     "$TOGGLE-><init>(Landroid/content/Context;Landroid/app/Activity;Landroid/app/AlertDialog;)V",
@@ -101,6 +105,7 @@ internal fun verifyVibeSettingsExtension(methods: Collection<Method>) {
     val gateRefs = references(gate)
     check("pl.neptis.yanosik.mobi.android.dashboard.dashboardpack.activity.DashboardPackActivity" in gateRefs)
     check("pl.neptis.features.login.AccountStartActivity" in gateRefs)
+    check("pl.neptis.features.map.MapActivity" !in gateRefs)
     check("dark_home_sidebar" in gateRefs)
     check("Landroid/content/SharedPreferences;->getBoolean(Ljava/lang/String;Z)Z" in gateRefs)
     val gateInstructions = byDescriptor.getValue(gate).implementation!!.instructions.toList()
@@ -115,6 +120,14 @@ internal fun verifyVibeSettingsExtension(methods: Collection<Method>) {
                 (it as NarrowLiteralInstruction).narrowLiteral == 1
     }) { "Dark mode must default on" }
     check("vibe_settings" in references("$SETTINGS->preferences(Landroid/content/Context;)Landroid/content/SharedPreferences;"))
+    check("dark_home_sidebar" in references("$SETTINGS->mapDark(Landroid/content/Context;)Z"))
+    val keyRefs = references("$SETTINGS->mapPreferenceKeys(Ljava/util/Set;)Ljava/util/Set;")
+    check("dark_home_sidebar" in keyRefs && "Ljava/util/HashSet;-><init>(Ljava/util/Collection;)V" in keyRefs)
+    for (action in listOf("register", "unregister")) {
+        val refs = references("$SETTINGS->${action}MapTheme(Landroid/content/Context;Landroid/content/SharedPreferences\$OnSharedPreferenceChangeListener;)V")
+        check("$SETTINGS->preferences(Landroid/content/Context;)Landroid/content/SharedPreferences;" in refs)
+        check("Landroid/content/SharedPreferences;->${action}OnSharedPreferenceChangeListener(Landroid/content/SharedPreferences\$OnSharedPreferenceChangeListener;)V" in refs)
+    }
     val toggleRefs = references("$TOGGLE->onCheckedChanged(Landroid/widget/CompoundButton;Z)V")
     val commit = toggleRefs.indexOf("Landroid/content/SharedPreferences\$Editor;->commit()Z")
     val recreate = toggleRefs.indexOf("Landroid/app/Activity;->recreate()V")
@@ -158,5 +171,5 @@ internal fun verifyVibeSettingsExtension(methods: Collection<Method>) {
         it.startsWith("Ljava/net/") || it.startsWith("Lokhttp") || it.startsWith("Lcom/google/") ||
                 it.startsWith("Lpl/neptis/") || it.contains("startActivity") || it.contains("setDefaultNightMode")
     }) { "Local settings must not call network/account/purchase code or change the global app theme" }
-    println("PASS serialized Vibe settings extension: exact ${methods.size} methods/${expectedClasses.size} classes; Material 3 switch styling, Google button exception, home/login gate, persistent local toggle")
+    println("PASS serialized Vibe settings extension: exact ${methods.size} methods/${expectedClasses.size} classes; Material 3 switch, Google exception, scoped theme, persistent toggle and map listener lifecycle")
 }

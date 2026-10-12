@@ -20,23 +20,31 @@ The reference APK defaults to `apk/yanosik_antisplit.apk`. On Bash, set `YANOSIK
 
 ### NixOS
 
-Enter the repository's development shell before building:
+Build and regenerate the patch metadata/README in one command from the repository root:
 
 ```bash
-nix-shell
-bash compile.sh --no-daemon
+bash scripts/build-nix.sh
 ```
 
-`shell.nix` uses your configured Nixpkgs, supplies Java 21 and the shared libraries needed by Google's Android SDK binaries, and uses your existing SDK at `${ANDROID_HOME:-$HOME/Android/Sdk}`. Install platform 36 and build-tools 36.0.0 in that SDK. GitHub Packages credentials are still required; the development shell doesn't provide them. A plugin-not-found error combined with HTTP 401 from the Morphe registry means package authentication is missing or invalid, rather than a missing NixOS library.
+The script enters the repository's Nix environment automatically, builds the Android bundle, runs tests and resource checks, regenerates metadata/README and validates the collection. Additional Gradle arguments are passed through. It uses the existing Gradle home and credentials; missing GitHub Packages authentication still blocks the full build. It stops on failure before regenerating metadata, so a failed build doesn't export a stale bundle.
 
-For the API 37 test phone, install `system-images;android-37.0;google_apis;x86_64`, then run these commands inside the development shell:
+`shell.nix` uses your configured Nixpkgs, supplies Java 21 and the shared libraries needed by Google's Android SDK binaries, and uses your existing SDK at `${ANDROID_HOME:-$HOME/Android/Sdk}`. Install platform 36 and build-tools 36.0.0 in that SDK. For interactive work, run `nix-shell`, then `bash compile.sh --no-daemon`. The `runScript` argument supports non-interactive commands inside this FHS environment; a plain `nix-shell --run` is intercepted by its shell hook.
+
+To open the existing API 37 test phone using your GPU and KVM:
+
+```bash
+bash scripts/start-android-gpu.sh
+```
+
+The script defaults to `Vibe_API_37` on `emulator-5554`. It boots with `-gpu host -accel on`, avoids loading snapshots from a different graphics renderer, and opens a scrcpy window using Wayland when available. Existing app data/sign-in are preserved. Repeating the command reuses the emulator and its existing window; closing the window leaves Android running. No APK is installed by this script. Logs go to `.tools/emulator-gpu-5554.log`. The window has audio forwarding disabled, so it is intended for UI checks.
+
+Supply an AVD name as the first argument or set `ANDROID_EMULATOR_PORT` to another even port from 5554 through 5682. The script refuses to reuse a different AVD or a software-rendered emulator on the selected port. It does not create or wipe AVDs. If the default AVD is missing, install `system-images;android-37.0;google_apis;x86_64` in the SDK and create it inside `nix-shell`:
 
 ```bash
 avdmanager create avd -n Vibe_API_37 -k 'system-images;android-37.0;google_apis;x86_64' -d pixel_7
-emulator -avd Vibe_API_37 -port 5554 -gpu swiftshader -no-audio -no-boot-anim -no-window
 ```
 
-Start a second development shell and run `scrcpy -s emulator-5554 --no-audio` to open the phone window. On a Wayland desktop where X display access is unavailable, use `SDL_VIDEODRIVER=wayland scrcpy -s emulator-5554 --no-audio`. Check hardware acceleration with `emulator -accel-check`. No NixOS system rebuild is needed when `/dev/kvm` is already accessible. The silent emulator configuration is for UI checks; it doesn't validate navigation audio.
+Check hardware acceleration with `emulator -accel-check`. No NixOS system rebuild is needed when `/dev/kvm` and the GPU render devices are already accessible.
 
 ## GitHub Actions setup
 

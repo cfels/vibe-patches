@@ -60,7 +60,7 @@ Here's what each patch does. The descriptions below also show up in Morphe Manag
 | [Mute voice ads](#mute-voice-ads) | Keep your drive free of sponsored audio and spoken ad campaigns. Navigation directions and road warnings still play normally. |  |
 | [Reduce tracking](#reduce-tracking) | Stop the tracking and ad-reporting services covered by this patch, including usage analytics, location targeting, Wi-Fi/app scans and crash uploads. Also blocks RevenueCat, so purchases and subscription syncing won't work. Navigation and sign-in stay online and may still send identifiers or location. |  |
 | [Skip startup ads](#skip-startup-ads) | Open Yanosik without startup ads, including campaigns already saved on your phone. Regular startup messages and account checks still work. |  |
-| [Vibe settings and fewer PRO prompts](#vibe-settings-and-fewer-pro-prompts) | Open Vibe settings from the home screen and choose a saved dark theme with a Material 3 toggle. Dark mode starts on. Hides PRO upgrade cards and purchase pages, plus donation prompts in settings. Direct donation and voucher pages still open. |  |
+| [Vibe settings and fewer PRO prompts](#vibe-settings-and-fewer-pro-prompts) | Open Vibe settings from the home screen and choose a saved dark theme for home, login, search and maps with a Material 3 toggle. Dark mode starts on. Hides PRO upgrade cards and purchase pages, plus donation prompts in settings. Direct donation and voucher pages still open. |  |
 
 </details>
 

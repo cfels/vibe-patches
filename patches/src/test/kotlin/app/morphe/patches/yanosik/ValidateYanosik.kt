@@ -59,7 +59,7 @@ private val changedMethods = setOf(
     "Ll9f;-><init>(ZZLh9f;)V",
     "La6f;-><init>(Lh6f;ZZLh9f;)V",
     "Lpl/neptis/features/settings/AppPreferenceActivity;->setupNoAdvSection()V"
-) + telemetryMethodDescriptors + settingsDonationObserverDescriptor
+) + telemetryMethodDescriptors + settingsDonationObserverDescriptor + mapThemeDescriptors
 
 private fun descriptor(method: Method) =
     "${method.definingClass}->${method.name}(${method.parameterTypes.joinToString("")})${method.returnType}"
@@ -295,6 +295,7 @@ fun validateReferenceApk(apk: File, workspace: File) {
                     changed += key
                     val ops = instructions(method)
                     when {
+                        key in mapThemeDescriptors -> verifyMapTheme(method, original)
                         key == "Lso8;->n(Ln8g;I)V" -> verifyHomePatchedTileGuard(method, original)
                         key == "Ly8;->c(Ll44;Ly93;)J" -> verifyHomeSidebarPalette(method, original)
                         key.contains("/DashboardPackActivity;->onCreate") -> verifyHomeThemeInstall(method, original)

@@ -54,6 +54,24 @@ public final class VibeSettings {
                 host.getClass().getName().equals(ACCOUNT)) && preferences(context).getBoolean(DARK, true);
     }
 
+    public static boolean mapDark(Context context) {
+        return preferences(context).getBoolean(DARK, true);
+    }
+
+    public static java.util.Set<String> mapPreferenceKeys(java.util.Set<String> keys) {
+        java.util.Set<String> result = new java.util.HashSet<>(keys);
+        result.add(DARK);
+        return result;
+    }
+
+    public static void registerMapTheme(Context context, SharedPreferences.OnSharedPreferenceChangeListener listener) {
+        preferences(context).registerOnSharedPreferenceChangeListener(listener);
+    }
+
+    public static void unregisterMapTheme(Context context, SharedPreferences.OnSharedPreferenceChangeListener listener) {
+        preferences(context).unregisterOnSharedPreferenceChangeListener(listener);
+    }
+
     public static long darkComposeColor(long lightColor, long darkColor) {
         return VibeColors.compose(lightColor, darkColor);
     }
@@ -140,7 +158,7 @@ public final class VibeSettings {
         label.setTypeface(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD);
         labels.addView(label);
         TextView explanation = new TextView(dialogContext);
-        explanation.setText("Home, sidebar and login screens.");
+        explanation.setText("Home, sidebar, login, search and maps.");
         explanation.setTextSize(13);
         explanation.setTextColor(secondary);
         explanation.setPadding(0, (int) (6 * density), (int) (12 * density), 0);

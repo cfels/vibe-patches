@@ -247,7 +247,7 @@
     },
     {
       "name": "Vibe settings and fewer PRO prompts",
-      "description": "Open Vibe settings from the home screen and choose a saved dark theme with a Material 3 toggle. Dark mode starts on. Hides PRO upgrade cards and purchase pages, plus donation prompts in settings. Direct donation and voucher pages still open.",
+      "description": "Open Vibe settings from the home screen and choose a saved dark theme for home, login, search and maps with a Material 3 toggle. Dark mode starts on. Hides PRO upgrade cards and purchase pages, plus donation prompts in settings. Direct donation and voucher pages still open.",
       "default": true,
       "category": null,
       "compatiblePackages": [

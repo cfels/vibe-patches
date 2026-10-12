@@ -17,7 +17,9 @@ The user confirmed that all patches work in their testing and explicitly request
 
 The API 37 NixOS AVD is `Vibe_API_37`, on `emulator-5554`. It runs with KVM inside `nix-shell`; `scrcpy` provides the Wayland phone window. The user signed in and confirmed the dark theme, Material 3 switch and final subtitle-free dialog. The current test APK includes the dark login fix, original white Google button and native switch with Material 3 styling. Vibe settings no longer shows the Appearance subtitle. Version is now 1.2.1, public patch names/descriptions use friendly wording, and Yanosik 26.9.0 compatibility no longer has the Experimental tag. Package/version guards and the minimum SDK remain unchanged.
 
-Use the ignored `patches/build/yanosik-emulator/yanosik-26.9.0-login-material-test.apk` for this emulator. Its local test key lives under `.tools`; preserve app data/sign-in and don't replace the key or uninstall the app. Standalone compilation and real APK/serialized DEX validation passed before the final wording/subtitle changes. All production Kotlin sources subsequently compiled, and the existing generator regenerated all eleven metadata entries from those compiled patches. Full Gradle bundle compilation is separately blocked by missing GitHub Packages authentication on this host. Don't describe standalone validation as a successful Gradle release build or claim that an unpublished download URL is live.
+The user subsequently reported light opened search/map screens on their phone and requested a targeted fix. Vibe dark mode now selects the original native night map/search palette through the map settings producer and its scoped preference listener; switching Vibe off restores the native map preference. Standalone validation passed for 77 original methods, and emulator screenshots confirm dark search/map with native Day mode selected. Physical-phone confirmation remains pending. Build with `bash scripts/build-nix.sh`; open/reuse the KVM/host-GPU emulator with `bash scripts/start-android-gpu.sh`.
+
+Use the ignored `patches/build/yanosik-emulator/yanosik-26.9.0-map-theme-test.apk` for this emulator. Its local test key lives under `.tools`; preserve app data/sign-in and don't replace the key or uninstall the app. Standalone compilation and real APK/serialized DEX validation passed for the final map/search fix and extension. All production Kotlin sources compiled, and the existing generator regenerated all eleven metadata entries from those compiled patches. Full Gradle bundle compilation is separately blocked by missing GitHub Packages authentication on this host. Don't describe standalone validation as a successful Gradle release build or claim that an unpublished download URL is live.
 
 ## Source map
 
@@ -28,6 +30,7 @@ Use the ignored `patches/build/yanosik-emulator/yanosik-26.9.0-login-material-te
 | `patches/src/main/kotlin/app/morphe/patches/yanosik/ad/DisableStartupCampaignsPatch.kt` | Startup campaign refresh and cached campaign selection. |
 | `patches/src/main/kotlin/app/morphe/patches/yanosik/ad/DisableVoiceAdsPatch.kt` | Dedicated advertising audio dispatcher. |
 | `patches/src/main/kotlin/app/morphe/patches/yanosik/promotions/PremiumPromotionsPatch.kt` | Promotional actions/cards, sidebar PRO card and PRO activity suppression; explicit DONATE/VOUCHER targets continue. |
+| `patches/src/main/kotlin/app/morphe/patches/yanosik/promotions/MapTheme.kt` | Native map/search theme and scoped preference listener hooks. |
 | `patches/src/main/kotlin/app/morphe/patches/yanosik/premium/LocalProPatch.kt` | Local PRO converter, startup state and settings/UI gates. Does not create remote purchases or server benefits. |
 | `patches/src/main/kotlin/app/morphe/patches/all/` | Universal patch implementations and supporting internal patches. |
 | `patches/src/main/kotlin/app/morphe/patches/shared/` | Retained generic preferences, fingerprints and experimental-version helpers. |
@@ -42,6 +45,7 @@ Use the ignored `patches/build/yanosik-emulator/yanosik-26.9.0-login-material-te
 | `compile.bat` | Windows build entry point with local Java/SDK/APK settings. |
 | `compile.sh` | Bash build entry point; Java/SDK environment, optional reference APK and Gradle arguments. |
 | `shell.nix` | NixOS Java 21, Android SDK binary libraries and scrcpy development environment. |
+| `scripts/build-nix.sh`, `scripts/start-android-gpu.sh` | Automatic Nix build/index checks and KVM/host-GPU emulator startup/window reuse. |
 | `.github/workflows/release.yml`, `.releaserc`, `.github/scripts/prepare_release.py` | Main-branch build and semantic-release; exact-version build, metadata verification and one staged release asset. |
 | `docs/build-and-release.md` | Local/CI prerequisites, GitHub secrets and release triggers. |
 | `scripts/validate-yanosik.ps1` | Standalone Kotlin/reference-APK validation with an explicitly supplied patcher runtime. |
