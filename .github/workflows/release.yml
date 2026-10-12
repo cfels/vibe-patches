@@ -41,33 +41,23 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
 
-      - name: Install Android SDK components
-        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
-
       - name: Cache Gradle
         uses: burrunan/gradle-cache-action@v3
 
-      - name: Bump version, build and regenerate metadata
+      - name: Bump version and regenerate metadata
         env:
           BUMP: ${{ inputs.bump }}
-        run: python3 .github/scripts/prepare_release.py --bump "$BUMP" --build
+        run: python3 .github/scripts/prepare_release.py --bump "$BUMP"
 
       - name: Check release automation
         run: python3 scripts/test_release_build.py
 
-      - name: Locate versioned bundle
+      - name: Resolve release version and bundle path
         id: bundle
         run: |
           version=$(awk -F= '/^version[[:space:]]*=/ {gsub(/[[:space:]\r]/,"",$2); print $2}' gradle.properties)
           printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
           printf 'path=patches/build/libs/vibe-patch-%s.mpp\n' "$version" >> "$GITHUB_OUTPUT"
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: vibe-patch-${{ steps.bundle.outputs.version }}
-          path: ${{ steps.bundle.outputs.path }}
-          if-no-files-found: error
 
       - name: Commit and push generated files
         id: prepared
@@ -81,6 +71,21 @@ jobs:
           git commit -m "chore: prepare v${VERSION} [skip ci]"
           git push origin HEAD:main
           printf 'commit=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Install Android SDK components
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+
+      - name: Build and validate committed release
+        run: |
+          python3 .github/scripts/prepare_release.py --build
+          git diff --exit-code -- gradle.properties patches-list.json patches-bundle.json README.md
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: vibe-patch-${{ steps.bundle.outputs.version }}
+          path: ${{ steps.bundle.outputs.path }}
+          if-no-files-found: error
 
       - name: Publish versioned release
         env:

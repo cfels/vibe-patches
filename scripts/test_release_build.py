@@ -140,6 +140,37 @@ class ReleaseMetadataTest(unittest.TestCase):
         self.assertEqual(metadata["version"], version)
         self.assertTrue(metadata["download_url"].endswith(f"/v{version}/{bundle.name}"))
 
+    def test_build_preserves_prepared_metadata_and_version(self):
+        version = release.bump_version(self.root, "patch")
+        with patch.object(release.subprocess, "run", side_effect=self.generate):
+            release.regenerate(self.root)
+            prepared = {name: (self.root / name).read_bytes() for name in release.GENERATED_FILES}
+            self.assertEqual(release.regenerate(self.root, build_bundle=True), version)
+        self.assertEqual(prepared, {name: (self.root / name).read_bytes() for name in release.GENERATED_FILES})
+        self.assertTrue((self.root / f"patches/build/libs/vibe-patch-{version}.mpp").is_file())
+
+    def test_workflow_pushes_metadata_before_build_and_publication(self):
+        workflow = (ROOT / ".github/workflows/release.yml").read_text()
+        steps = re.split(r"(?m)^      - name: ", workflow)[1:]
+        prepare = next(i for i, step in enumerate(steps) if "prepare_release.py --bump" in step)
+        commit = next(i for i, step in enumerate(steps) if "git commit " in step)
+        build = next(i for i, step in enumerate(steps) if "prepare_release.py --build" in step)
+        upload = next(i for i, step in enumerate(steps) if "actions/upload-artifact@" in step)
+        publish = next(i for i, step in enumerate(steps) if "gh release create " in step)
+        self.assertLess(prepare, commit)
+        self.assertLess(commit, build)
+        self.assertLess(build, upload)
+        self.assertLess(upload, publish)
+        self.assertNotIn("--build", steps[prepare])
+        self.assertNotIn("--bump", steps[build])
+        self.assertIn("git push origin HEAD:main", steps[commit])
+        self.assertLess(steps[commit].index("git commit "), steps[commit].index("git push "))
+        self.assertIn("git diff --exit-code -- " + " ".join(release.GENERATED_FILES), steps[build])
+        self.assertIn("COMMIT: ${{ steps.prepared.outputs.commit }}", steps[publish])
+        self.assertIn('--target "$COMMIT"', steps[publish])
+        self.assertNotIn("continue-on-error:", workflow)
+        self.assertNotIn("if: always()", workflow)
+
     def test_compile_script_runs_release_tasks_and_reports_exact_bundle(self):
         shutil.copyfile(ROOT / "compile.sh", self.root / "compile.sh")
         bundle = self.archive()

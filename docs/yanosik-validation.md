@@ -1,5 +1,13 @@
 # Yanosik validation
 
+## Metadata push before release build — 12 October 2026
+
+At the user's request, the manual release now runs `prepare_release.py --bump <part>` to regenerate metadata first, checks the automation, and commits/pushes the four generated files before installing SDK components and building. It then runs `prepare_release.py --build` without another bump, checks that build-time regeneration leaves the committed metadata unchanged, uploads the validated versioned bundle, and publishes it at the prepared commit. Metadata or push failures stop before the Android build; build failures leave the pushed version awaiting its matching asset. Recovery guidance and contributor instructions now reflect that order.
+
+All fifteen isolated tests passed with `python3 scripts/test_release_build.py`. New checks cover metadata preservation across the separate build and workflow ordering through push, build, artifact upload and publication. The existing fixture still confirms `compile.sh` runs `:patches:buildAndroid`, `:patches:test`, `:patches:generatePatchesList` and `:patches:checkStringResources`. Both workflows passed actionlint 1.7.12 with shellcheck/pyflakes integrations disabled; migration structure and whitespace checks passed.
+
+No remote workflow was dispatched, no local version was bumped, and no commit, push or release publication was performed during this change. No APK or phone QA was needed. The Android task combination is unchanged; the full local Gradle build remains subject to the previously recorded GitHub Packages authentication limitation.
+
 ## Manual release bundle build and publication — 12 October 2026
 
 The user requested restoring release building from earlier commits. The manual workflow is now **Build and release Vibe Patch** and retains patch/minor/major bumps on main. `prepare_release.py --bump <part> --build` reuses the former `bash compile.sh --no-daemon :patches:generatePatchesList :patches:checkStringResources` task combination. The script removes any existing bundle for that version before compilation and reuses the earlier bundle manifest/name/version and Android DEX checks. Default regeneration and ordinary push/PR `--check` remain JVM-only; `--check --build` is rejected.
