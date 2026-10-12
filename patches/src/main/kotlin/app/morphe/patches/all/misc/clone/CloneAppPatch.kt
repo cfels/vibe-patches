@@ -58,9 +58,9 @@ fun setOrGetFallbackPackageName(fallbackPackageName: String): String {
 
 @Suppress("unused")
 val cloneAppPatch = resourcePatch(
-    name = "Install a second copy",
-    description = "Install another copy using a different package name. Adds \".morphe\" by default; " +
-            "each copy needs its own name. Some apps don't support cloning and may crash or lose features.",
+    name = "Another app copy",
+    description = "Installs a second copy with a different package name. Adds .morphe by default. " +
+            "Each copy needs its own package name; some apps may crash or lose features.",
     default = false
 ) {
     packageNameOption = stringOption(
@@ -68,7 +68,7 @@ val cloneAppPatch = resourcePatch(
         default = "Default",
         values = mapOf("Default" to "Default"),
         title = "Package name",
-        description = "Choose a unique package name for this copy, or leave Default to add .morphe.",
+        description = "Use a unique package name, or leave Default to add .morphe.",
         required = true,
     ) {
         it == "Default" || it!!.matches(Regex("^[a-z]\\w*(\\.[a-z]\\w*)+$"))
@@ -78,16 +78,16 @@ val cloneAppPatch = resourcePatch(
         key = "updatePermissions",
         default = true,
         title = "Update permissions",
-        description = "Renames the app's custom permissions so the copies can be installed together. " +
-            "This can break features in some apps.",
+        description = "Renames custom permissions so both copies can be installed. " +
+            "Can break some features.",
     )
 
     val updateProvidersOption = booleanOption(
         key = "updateProviders",
         default = true,
         title = "Update providers",
-        description = "Renames the app's providers so the copies can be installed together. " +
-            "This can break features in some apps.",
+        description = "Renames providers so both copies can be installed. " +
+            "Can break some features.",
     )
 
     fun getReplacementPackageName(originalPackageName: String) : String {

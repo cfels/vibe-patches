@@ -47,8 +47,8 @@ for patch in data['patches']:
             assert target['targets'][0]['isExperimental'] is False
 names = [p['name'] for p in yanosik]
 assert len(names) == len(set(names)) == 6, f'Unexpected Yanosik index: {names}'
-assert set(names) == {'Hide banner ads', 'Skip startup ads', 'Mute voice ads',
-                      'Vibe settings and fewer PRO prompts', 'Enable local PRO', 'Reduce tracking'}
+assert set(names) == {'No banner ads', 'No startup ads', 'No voice ads',
+                      'Vibe settings & less PRO spam', 'Local PRO', 'Less tracking'}
 declared = []
 for path in (SOURCE/'yanosik').rglob('*.kt'):
     declared.extend(re.findall(r'bytecodePatch\(\s*name = "([^"]+)"', path.read_text()))

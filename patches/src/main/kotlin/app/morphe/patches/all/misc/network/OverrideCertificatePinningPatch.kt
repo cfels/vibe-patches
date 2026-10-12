@@ -37,8 +37,8 @@ private const val NETWORK_SECURITY_CONFIG_ATTRIBUTE_NAME = "android:networkSecur
 
 @Suppress("unused")
 val overrideCertificatePinningPatch = resourcePatch(
-    name = "Inspect app traffic",
-    description = "Let a debugging proxy inspect the app's traffic by bypassing certificate pinning.",
+    name = "Debug app traffic",
+    description = "Bypasses certificate pinning so a debugging proxy can inspect the app's traffic.",
     default = false
 ) {
     execute {

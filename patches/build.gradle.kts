@@ -1,4 +1,5 @@
 import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.bundling.Zip
 import org.gradle.jvm.tasks.Jar
 
 group = "app.morphe"
@@ -6,17 +7,15 @@ group = "app.morphe"
 patches {
     about {
         name = "Vibe Patch"
-        description = "Yanosik tweaks and a few handy universal patches"
-        source = "git@github.com:MorpheApp/morphe-patches.git"
-        author = "MorpheApp"
-        contact = "na"
-        website = "https://morphe.software"
+        description = "Yanosik patches and some universal stuff"
+        source = "https://github.com/cfels/vibe-patches"
+        author = "Moxiu"
+        contact = "https://moxiu.vacpro.fyi/contact.html"
+        website = "https://moxiu.vacpro.fyi"
         license = "GNU General Public License v3.0, with additional GPL section 7 requirements"
     }
 }
 
-// Separate configuration so gson is available at runtime for the
-// generatePatchesList task but never bundled into the APK.
 val patchListGeneratorClasspath = configurations.create("patchListGeneratorClasspath")
 val yanosikApk = providers.gradleProperty("yanosikApk")
 
@@ -63,13 +62,20 @@ tasks {
         mainClass.set("app.morphe.patches.util.resource.CheckStringResourcesKt")
     }
 
+    val metadataClasses = register<Zip>("metadataClasses") {
+        from(sourceSets["main"].output.classesDirs)
+        destinationDirectory.set(layout.buildDirectory.dir("metadata"))
+        archiveFileName.set("patches.jar")
+    }
+
     register<JavaExec>("generatePatchesList") {
-        description = "Build patch with patch list"
-
-        dependsOn(build)
-
-        classpath = sourceSets["main"].runtimeClasspath + patchListGeneratorClasspath
-        mainClass.set("app.morphe.util.PatchListGeneratorKt")
+        description = "Generates patch metadata from JVM classes without building Android bundles"
+        dependsOn(metadataClasses)
+        classpath = files(metadataClasses.flatMap { it.archiveFile }) +
+            configurations["runtimeClasspath"] + patchListGeneratorClasspath
+        workingDir(projectDir)
+        mainClass.set(rootProject.file(".github/scripts/ExportPatchMetadata.java").absolutePath)
+        args(metadataClasses.flatMap { it.archiveFile }.get().asFile.absolutePath, project.version.toString())
     }
 
     register<JavaExec>("validateYanosik") {
@@ -83,10 +89,5 @@ tasks {
                 ?: throw GradleException("validateYanosik requires -PyanosikApk=/absolute/path/to/reference.apk")
             setArgs(listOf(apk, layout.buildDirectory.dir("yanosik-validation").get().asFile.absolutePath))
         }
-    }
-
-    // Used by gradle-semantic-release-plugin.
-    publish {
-        dependsOn("generatePatchesList")
     }
 }

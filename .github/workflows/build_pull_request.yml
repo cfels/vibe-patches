@@ -1,44 +1,40 @@
-name: Build pull request
+name: Check generated metadata
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - dev
   pull_request:
-    branches:
-      - dev
+
+permissions:
+  contents: read
+  packages: read
 
 jobs:
-  release:
-    name: Build
-    runs-on: ubuntu-latest
+  metadata:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      ORG_GRADLE_PROJECT_gpr.user: ${{ secrets.PACKAGES_USERNAME || github.actor }}
+      ORG_GRADLE_PROJECT_gpr.key: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
-      - name: Setup Java
+      - name: Set up Java 21
         uses: actions/setup-java@v6
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '21'
 
-      - name: Set up Android SDK
+      - name: Set up Android SDK for Gradle configuration
         uses: android-actions/setup-android@v4
-
-      - name: Install Android SDK components
-        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
 
       - name: Cache Gradle
         uses: burrunan/gradle-cache-action@v3
 
-      - name: Build
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew :patches:buildAndroid --no-daemon
+      - name: Check release automation
+        run: python3 scripts/test_release_build.py
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          archive: false
-          path: patches/build/libs
+      - name: Verify generated metadata is current
+        run: python3 .github/scripts/prepare_release.py --check

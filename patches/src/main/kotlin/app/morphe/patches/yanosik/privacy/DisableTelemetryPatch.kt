@@ -195,10 +195,10 @@ private val telemetryTargets = buildList {
 
 @Suppress("unused")
 val disableTelemetryPatch = bytecodePatch(
-    name = "Reduce tracking",
-    description = "Stop the tracking and ad-reporting services covered by this patch, including usage analytics, " +
-        "location targeting, Wi-Fi/app scans and crash uploads. Also blocks RevenueCat, so purchases and " +
-        "subscription syncing won't work. Navigation and sign-in stay online and may still send identifiers or location."
+    name = "Less tracking",
+    description = "Cuts down on analytics, ad reports, location targeting, Wi-Fi/app scans and crash uploads. " +
+        "Also blocks RevenueCat, so purchases and subscription syncing stop working. " +
+        "Maps and login still go online and may send your location or identifiers."
 ) {
     compatibleWith(COMPATIBILITY_YANOSIK)
     dependsOn(referenceVersionPatch, disableTelemetryResourcesPatch)

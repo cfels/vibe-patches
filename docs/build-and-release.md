@@ -14,21 +14,23 @@ Install Android SDK platform 36 and build-tools 36.0.0. Set `JAVA_HOME` to an in
 
 The scripts refresh dependencies, build the Android patch bundle and run tests. Both produce **`patches/build/libs/vibe-patch-<version>.mpp`** directly. The version comes from `gradle.properties`. Gradle's `buildVibePatch` task remains an alias for `buildAndroid` for existing commands. There is no second `patches-<version>.mpp` export.
 
-The Bash script uses `${GRADLE_USER_HOME:-$HOME/.gradle}` and passes additional arguments through to Gradle, for example `bash compile.sh --no-daemon`. Morphe's Maven dependencies require GitHub Packages credentials: user Gradle properties `gpr.user` / `gpr.key`, or `GITHUB_ACTOR` / `GITHUB_TOKEN`. Keep the token outside this repository.
+The Bash script uses `${GRADLE_USER_HOME:-$HOME/.gradle}` and passes additional arguments through to Gradle, for example `bash compile.sh --no-daemon`. Morphe's Maven dependencies require GitHub Packages credentials: user Gradle properties `gpr.user` / `gpr.key`, or `GITHUB_ACTOR` / `GITHUB_TOKEN`. CI supplies the same dotted properties through `ORG_GRADLE_PROJECT_gpr.user` / `ORG_GRADLE_PROJECT_gpr.key` so both the settings plugin and its dependency repositories receive the credentials. The underscore aliases remain supported by this checkout’s settings as fallbacks. Keep the token outside this repository.
 
 The reference APK defaults to `apk/yanosik_antisplit.apk`. On Bash, set `YANOSIK_APK=/absolute/path/to/yanosik.apk` to choose another location. An explicitly supplied missing APK fails immediately. Without a reference APK, the Bash build succeeds but the Yanosik integration test skips; this is not reference-APK validation. Local APKs are intentionally excluded from Git.
 
 ### NixOS
 
-Build and regenerate the patch metadata/README in one command from the repository root:
+Enter the repository's development shell and run the existing build script:
 
 ```bash
-bash scripts/build-nix.sh
+nix-shell
+bash compile.sh --no-daemon
+python3 .github/scripts/prepare_release.py
 ```
 
-The script enters the repository's Nix environment automatically, builds the Android bundle, runs tests and resource checks, regenerates metadata/README and validates the collection. Additional Gradle arguments are passed through. It uses the existing Gradle home and credentials; missing GitHub Packages authentication still blocks the full build. It stops on failure before regenerating metadata, so a failed build doesn't export a stale bundle.
+The metadata command compiles JVM patch classes and runs the existing index and README generators; it does not build an Android bundle or run APK tests. `compile.sh` uses the existing Gradle home and credentials; missing GitHub Packages authentication still blocks the full build.
 
-`shell.nix` uses your configured Nixpkgs, supplies Java 21 and the shared libraries needed by Google's Android SDK binaries, and uses your existing SDK at `${ANDROID_HOME:-$HOME/Android/Sdk}`. Install platform 36 and build-tools 36.0.0 in that SDK. For interactive work, run `nix-shell`, then `bash compile.sh --no-daemon`. The `runScript` argument supports non-interactive commands inside this FHS environment; a plain `nix-shell --run` is intercepted by its shell hook.
+`shell.nix` uses your configured Nixpkgs, supplies Java 21 and the shared libraries needed by Google's Android SDK binaries, and uses your existing SDK at `${ANDROID_HOME:-$HOME/Android/Sdk}`. Install platform 36 and build-tools 36.0.0 in that SDK. Its `runScript` argument also supports non-interactive commands; a plain `nix-shell --run` is intercepted by the FHS shell hook.
 
 To open the existing API 37 test phone using your GPU and KVM:
 
@@ -48,7 +50,7 @@ Check hardware acceleration with `emulator -accel-check`. No NixOS system rebuil
 
 ## GitHub Actions setup
 
-Push these changes to your own GitHub repository and enable Actions. `.github/workflows/release.yml` runs on pushes to **main** and can also be started from **Actions → Build and release Vibe Patch → Run workflow**, selecting main. Both build workflows explicitly set up Android's command-line tools with `android-actions/setup-android` before installing SDK platform 36 and build-tools 36.0.0, so they don't depend on `sdkmanager` already being on the runner's PATH.
+Push these changes to GitHub and enable Actions. **Prepare Vibe Patch release** runs only when manually triggered on main. **Check generated metadata** runs on ordinary pushes and pull requests, regenerates the files and fails on a diff. It never bumps, commits or pushes. Both jobs need Java 21 and Morphe Maven access; Android SDK setup is only for Gradle project configuration. Neither job builds an Android bundle or tests an APK.
 
 In **Settings → Secrets and variables → Actions**, add these repository secrets if the job's built-in token cannot read Morphe's external Maven registry:
 
@@ -59,14 +61,35 @@ In **Settings → Secrets and variables → Actions**, add these repository secr
 
 Your local Gradle credentials are not transferred to GitHub Actions. Without these secrets, the workflow tries `github.actor` and the built-in `GITHUB_TOKEN`. See [GitHub's package authentication documentation](https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages#about-access-tokens).
 
-The workflow grants its repository token `contents: write` to create the release/tag and commit generated version/metadata files, plus `packages: read` for dependency resolution. A protected main branch must permit the release commit for this automation to complete. The separate package token is used only for Gradle downloads.
+The workflow grants its repository token `contents: write` to commit and push generated version/metadata files, plus `packages: read` for dependency resolution. A protected main branch must permit the release commit for this automation to complete. The separate package token is used only for Gradle downloads.
+
+## Adding the collection to Morphe
+
+Use [Add Vibe Patch to Morphe](https://morphe.software/add-source?github=cfels/vibe-patches&name=Vibe%20Patch), or add `https://github.com/cfels/vibe-patches` as a remote source. Morphe resolves the repository to `https://raw.githubusercontent.com/cfels/vibe-patches/main/patches-bundle.json` and downloads the `.mpp` at `download_url`.
+
+The JSON version, Gradle version, compiled bundle manifest and asset filename must agree. Publish the matching asset when publishing the versioned metadata; a JSON file pointing at an unpublished release returns a failed download. A local import doesn't auto-update. Updating the source also doesn't replace an installed patched APK.
 
 ## Releases
 
-The existing conventional-commit versioning is retained. A main-branch commit such as `fix: repair navigation banners` creates a patch release; `feat: add a new patch` creates a minor release. Breaking changes create a major release. `bump:` and `perf:` also create patch releases. A manual run uses the same commit rules: it does not force another release when there are no release-worthy commits.
+`gradle.properties` is the only version source. The JSON files and README copy that version during generation; they are not independent version settings. Commit wording has no effect on versioning.
 
-Each run builds and tests, then uploads one current-version bundle as a workflow artifact. For a new release, preparation updates `gradle.properties` to the calculated version, rebuilds, checks resource strings, regenerates the patch index/README and checks the collection structure. It verifies the archive name/version/Android DEX and the generated download URL before staging a single asset: **`vibe-patch-<release-version>.mpp`**. Semantic-release commits generated metadata and publishes a GitHub release with that asset. It does not publish Maven packages or call Morphe's website/notification services.
+For the next release:
 
-The ignored reference APK is absent on GitHub's runner, so CI's APK integration test skips. Run a local build with that APK before releasing patch behavior changes. The GitHub job itself must run in your repository to verify remote credentials, branch rules and publication permissions; local checks cannot exercise those.
+1. Push the changes to main. Configure the package-read secrets above if needed and allow the Actions bot to push to main under your branch rules.
+2. Open **Actions → Prepare Vibe Patch release → Run workflow**, select **main**, and choose **patch** (default), **minor** or **major**. For example, a patch bump takes `1.2.2` to `1.2.3`; minor/major bumps reset the lower components.
+3. The job checks out the latest main, runs `python3 .github/scripts/prepare_release.py --bump <part>`, then commits and pushes only `gradle.properties`, `patches-list.json`, `patches-bundle.json` and `README.md`. Failed generation stops before the commit. The release workflow has no push trigger, and its commit uses the repository's `GITHUB_TOKEN` plus `[skip ci]`, so it cannot release itself again.
+4. Build the matching bundle through the existing build process and publish it as `vibe-patch-<version>.mpp` on the GitHub release tagged `v<version>`. This metadata workflow does not create a tag, publish an asset or claim that its prepared download URL is already live. Until that asset exists, Morphe cannot download the new version.
 
-Release commits use only `chore: Release v<version> [skip ci]`. Full release notes remain in `CHANGELOG.md` and the GitHub release. Keeping them out of the commit message prevents `git commit -m` from exceeding the runner's argument-size limit (`E2BIG`), especially on the first release of a fork with a long upstream history. After pushing a workflow or release-configuration fix, start a fresh run on the updated main commit; rerunning the failed job uses its old configuration.
+Every successful manual run bumps again. Rerunning after a successful push starts from that new version. The workflow serializes runs and checks out the latest main so queued runs use the latest committed version. A concurrent push can make the final push fail; it never force-pushes.
+
+Locally, use the same path:
+
+```bash
+python3 .github/scripts/prepare_release.py          # regenerate without bumping
+python3 .github/scripts/prepare_release.py --check  # regenerate and fail on tracked differences
+python3 .github/scripts/prepare_release.py --bump patch
+```
+
+On NixOS, run these inside `nix-shell`. `--check` leaves regenerated files available for review; commit those yourself when making normal patch metadata edits. Release preparation updates the Morphe URL and description from the bundle's existing `patches.about` source/description information. The timestamp changes only when the generated version changes, so repeated checks are stable. Historical validation documents and the existing changelog are not generated release metadata and are not rewritten.
+
+Run `python3 scripts/test_release_build.py` and actionlint after changing the automation. Fork PRs cannot access repository package-read secrets; they require registry access through their built-in token or a maintainer run on a trusted branch. No credentials are exposed through a privileged PR workflow.

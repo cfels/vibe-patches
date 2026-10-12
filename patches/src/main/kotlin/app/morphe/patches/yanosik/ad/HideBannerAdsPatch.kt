@@ -74,9 +74,9 @@ internal const val HIDE_BANNER_VIEW = """
 
 @Suppress("unused")
 val hideBannerAdsPatch = bytecodePatch(
-    name = "Hide banner ads",
-    description = "Clear banner ads and their empty spaces from the map, navigation and home screen. " +
-        "Road alerts and route controls stay in place."
+    name = "No banner ads",
+    description = "Removes banners from the map, navigation and home screen, including the empty ad space. " +
+        "Road alerts and route controls stay."
 ) {
     compatibleWith(COMPATIBILITY_YANOSIK)
     dependsOn(referenceVersionPatch)
