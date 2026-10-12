@@ -1,4 +1,4 @@
-"""Regenerate release metadata from the canonical Gradle version."""
+"""Regenerate release metadata and optionally build the matching Android bundle."""
 import argparse
 from datetime import datetime, timezone
 import json
@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+from zipfile import ZipFile
 
 GENERATED_FILES = ("gradle.properties", "patches-list.json", "patches-bundle.json", "README.md")
 VERSION_PROPERTY = re.compile(r"(?m)^version\s*=\s*([^\r\n]+)")
@@ -30,7 +31,7 @@ def bump_version(root: Path, part: str) -> str:
     return version
 
 
-def regenerate(root: Path) -> str:
+def regenerate(root: Path, build_bundle: bool = False) -> str:
     version = read_version(root)
     build = (root / "patches/build.gradle.kts").read_text(encoding="utf-8")
     source = re.search(r'source = "https://github.com/([\w.-]+/[\w.-]+)"', build)
@@ -38,7 +39,22 @@ def regenerate(root: Path) -> str:
     if source is None or description is None:
         raise ValueError("Expected GitHub source and description in patches.about")
     repository = source[1]
-    subprocess.run(["bash", "gradlew", "--no-daemon", ":patches:generatePatchesList"], cwd=root, check=True)
+    bundle = root / f"patches/build/libs/vibe-patch-{version}.mpp"
+    if build_bundle:
+        bundle.unlink(missing_ok=True)
+        command = ["bash", "compile.sh", "--no-daemon", ":patches:generatePatchesList",
+                   ":patches:checkStringResources"]
+    else:
+        command = ["bash", "gradlew", "--no-daemon", ":patches:generatePatchesList"]
+    subprocess.run(command, cwd=root, check=True)
+    if build_bundle:
+        with ZipFile(bundle) as archive:
+            manifest = archive.read("META-INF/MANIFEST.MF").decode()
+            fields = dict(line.split(": ", 1) for line in manifest.splitlines() if ": " in line)
+            if fields.get("Version") != version or fields.get("Name") != "Vibe Patch":
+                raise ValueError("Bundle manifest must match the Vibe Patch release version")
+            if "classes.dex" not in archive.namelist():
+                raise ValueError("Release bundle must include Android DEX")
     index = json.loads((root / "patches-list.json").read_text(encoding="utf-8"))
     if index["version"] != version:
         raise ValueError("Generated patch index does not match gradle.properties")
@@ -68,11 +84,14 @@ if __name__ == "__main__":
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument("--bump", choices=("patch", "minor", "major"))
     modes.add_argument("--check", action="store_true", help="Fail if regeneration changes tracked metadata")
+    parser.add_argument("--build", action="store_true", help="Build, test and validate the versioned Android bundle")
     arguments = parser.parse_args()
+    if arguments.check and arguments.build:
+        parser.error("--check cannot be combined with --build")
     root = Path(__file__).resolve().parents[2]
     if arguments.bump:
         bump_version(root, arguments.bump)
-    version = regenerate(root)
+    version = regenerate(root, build_bundle=arguments.build)
     if arguments.check:
         check_generated(root)
-    print(f"Vibe Patch {version}: metadata regenerated")
+    print(f"Vibe Patch {version}: metadata regenerated" + (", Android bundle built and validated" if arguments.build else ""))

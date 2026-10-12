@@ -1,5 +1,15 @@
 # Yanosik validation
 
+## Manual release bundle build and publication — 12 October 2026
+
+The user requested restoring release building from earlier commits. The manual workflow is now **Build and release Vibe Patch** and retains patch/minor/major bumps on main. `prepare_release.py --bump <part> --build` reuses the former `bash compile.sh --no-daemon :patches:generatePatchesList :patches:checkStringResources` task combination. The script removes any existing bundle for that version before compilation and reuses the earlier bundle manifest/name/version and Android DEX checks. Default regeneration and ordinary push/PR `--check` remain JVM-only; `--check --build` is rejected.
+
+The release job restores SDK platform 36/build-tools 36.0.0 installation and saves only the validated versioned `.mpp` as an Actions artifact before the metadata commit/push. It then uses the repository token to create `v<version>` at that exact prepared commit and attach the same bundle, with GitHub-generated notes. No semantic-release or npm dependency was restored. CI still has no reference APK, so its Yanosik integration test skips. Build/validation/artifact failures stop before committing; publication failures after the push leave an artifact for completing that version's release, as documented.
+
+Thirteen isolated tests passed with `python3 scripts/test_release_build.py`, including new-version build ordering, stale bundle removal, wrong manifest identity/version, missing DEX/output, build failures and the `--check` boundary. A fixture ran the actual `compile.sh` against a fake Gradle executable and confirmed all four release tasks and the exact bundle output. Both workflows passed actionlint 1.7.12 (shellcheck/pyflakes integrations disabled); migration and whitespace checks passed.
+
+The real task dry run used `nix-shell --argstr runScript 'bash compile.sh --no-daemon :patches:generatePatchesList :patches:checkStringResources --offline --dry-run'`. The sandbox first denied Nix daemon socket access. With narrowly approved access, Java/Gradle started but stopped at settings plugin `app.morphe.patches:1.3.4` resolution because it is unavailable in the offline cache, consistent with this host's recorded GitHub Packages credential limitation. Log: `.tools/release-build-dry-run.log`. This is not a successful full bundle build or remote release run. Version remains 1.2.2; no local commit, push, workflow dispatch, publication, APK change or phone QA was performed.
+
 ## Metadata dependency ordering — 12 October 2026
 
 The push/PR metadata check failed because CI's library exporter already emitted `dependencies` before `compatiblePackages`, while the local exporter appended it after `options`. Gson replaces an existing member without moving it. The wrapper now removes that member before appending the compiled dependency values, giving both exporters the same order. The strict generated-diff check remains unchanged.

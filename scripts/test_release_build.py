@@ -1,14 +1,17 @@
-"""Release metadata checks without APK builds, network access or publication."""
+"""Release metadata and bundle checks without APK builds, network access or publication."""
 import importlib.util
 import json
+import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
+from zipfile import ZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("prepare_release", ROOT / ".github/scripts/prepare_release.py")
@@ -33,14 +36,29 @@ class ReleaseMetadataTest(unittest.TestCase):
     def generate(self, command, **kwargs):
         self.assertEqual(kwargs["cwd"], self.root)
         self.assertTrue(kwargs["check"])
-        if command[:2] == ["bash", "gradlew"]:
-            self.assertEqual(command, ["bash", "gradlew", "--no-daemon", ":patches:generatePatchesList"])
+        if command[:2] in (["bash", "gradlew"], ["bash", "compile.sh"]):
+            if command[1] == "compile.sh":
+                self.assertEqual(command, ["bash", "compile.sh", "--no-daemon", ":patches:generatePatchesList",
+                                           ":patches:checkStringResources"])
+                self.archive()
+            else:
+                self.assertEqual(command, ["bash", "gradlew", "--no-daemon", ":patches:generatePatchesList"])
             index_path = self.root / "patches-list.json"
             index = json.loads(index_path.read_text())
             index["version"] = release.read_version(self.root)
             index_path.write_text(json.dumps(index, indent=2) + "\n")
         elif command[-1] != "scripts/validate-migration.py":
             self.run(command, **kwargs, stdout=subprocess.DEVNULL)
+
+    def archive(self, version=None, name="Vibe Patch", dex=True):
+        current = release.read_version(self.root)
+        bundle = self.root / f"patches/build/libs/vibe-patch-{current}.mpp"
+        bundle.parent.mkdir(parents=True, exist_ok=True)
+        with ZipFile(bundle, "w") as archive:
+            archive.writestr("META-INF/MANIFEST.MF", f"Name: {name}\r\nVersion: {version or current}\r\n")
+            if dex:
+                archive.writestr("classes.dex", b"test DEX fixture")
+        return bundle
 
     def test_repository_metadata_resolves_the_versioned_bundle(self):
         version = release.read_version(ROOT)
@@ -104,6 +122,72 @@ class ReleaseMetadataTest(unittest.TestCase):
         with patch.object(release.subprocess, "run", side_effect=error), self.assertRaises(subprocess.CalledProcessError):
             release.regenerate(self.root)
         self.assertEqual(before, {name: (self.root / name).read_bytes() for name in before})
+
+    def test_build_uses_bumped_version_and_keeps_one_bundle(self):
+        version = release.bump_version(self.root, "patch")
+        bundle = self.archive(version="0.0.0")
+
+        def build(command, **kwargs):
+            if command[:2] == ["bash", "compile.sh"]:
+                self.assertEqual(release.read_version(self.root), version)
+                self.assertFalse(bundle.exists())
+            self.generate(command, **kwargs)
+
+        with patch.object(release.subprocess, "run", side_effect=build):
+            self.assertEqual(release.regenerate(self.root, build_bundle=True), version)
+        self.assertEqual(list(bundle.parent.glob("*.mpp")), [bundle])
+        metadata = json.loads((self.root / "patches-bundle.json").read_text())
+        self.assertEqual(metadata["version"], version)
+        self.assertTrue(metadata["download_url"].endswith(f"/v{version}/{bundle.name}"))
+
+    def test_compile_script_runs_release_tasks_and_reports_exact_bundle(self):
+        shutil.copyfile(ROOT / "compile.sh", self.root / "compile.sh")
+        bundle = self.archive()
+        bundle.rename(self.root / "build-fixture.mpp")
+        (self.root / "gradlew").write_text(
+            'printf "%s\\n" "$@" > gradle-arguments.txt\n'
+            f'cp build-fixture.mpp "patches/build/libs/{bundle.name}"\n')
+        result = self.run(["bash", "compile.sh", "--no-daemon", ":patches:generatePatchesList",
+                           ":patches:checkStringResources"], cwd=self.root, check=True, capture_output=True, text=True,
+                          env={key: value for key, value in os.environ.items() if key != "YANOSIK_APK"})
+        arguments = (self.root / "gradle-arguments.txt").read_text().splitlines()
+        self.assertEqual(arguments[3:], [":patches:buildAndroid", ":patches:test", "--no-daemon",
+                                        ":patches:generatePatchesList", ":patches:checkStringResources"])
+        self.assertIn(str(bundle), result.stdout)
+        self.assertEqual(bundle.read_bytes(), (self.root / "build-fixture.mpp").read_bytes())
+
+    def test_rejects_wrong_bundle_identity_or_missing_dex(self):
+        for fields in [{"version": "0.0.0"}, {"name": "Other patches"}, {"dex": False}]:
+            with self.subTest(fields=fields):
+                before = {name: (self.root / name).read_bytes() for name in ["patches-bundle.json", "README.md"]}
+
+                def build(command, **kwargs):
+                    self.generate(command, **kwargs)
+                    if command[:2] == ["bash", "compile.sh"]:
+                        self.archive(**fields)
+
+                with patch.object(release.subprocess, "run", side_effect=build), self.assertRaises(ValueError):
+                    release.regenerate(self.root, build_bundle=True)
+                self.assertEqual(before, {name: (self.root / name).read_bytes() for name in before})
+
+    def test_failed_build_removes_stale_bundle_and_preserves_metadata(self):
+        bundle = self.archive()
+        before = {name: (self.root / name).read_bytes() for name in ["patches-bundle.json", "README.md"]}
+        error = subprocess.CalledProcessError(1, ["bash", "compile.sh"])
+        with patch.object(release.subprocess, "run", side_effect=error), self.assertRaises(subprocess.CalledProcessError):
+            release.regenerate(self.root, build_bundle=True)
+        self.assertFalse(bundle.exists())
+        self.assertEqual(before, {name: (self.root / name).read_bytes() for name in before})
+
+    def test_rejects_missing_build_output(self):
+        with patch.object(release.subprocess, "run"), self.assertRaises(FileNotFoundError):
+            release.regenerate(self.root, build_bundle=True)
+
+    def test_check_mode_cannot_build(self):
+        result = self.run([sys.executable, str(ROOT / ".github/scripts/prepare_release.py"), "--check", "--build"],
+                          cwd=self.root, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("--check cannot be combined with --build", result.stderr)
 
     def test_rejects_stale_index_version(self):
         release.bump_version(self.root, "patch")

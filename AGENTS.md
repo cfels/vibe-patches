@@ -21,7 +21,7 @@ The user subsequently reported light opened search/map screens on their phone an
 
 Use the ignored `patches/build/yanosik-emulator/yanosik-26.9.0-map-theme-test.apk` for this emulator. Its local test key lives under `.tools`; preserve app data/sign-in and don't replace the key or uninstall the app. Standalone compilation and real APK/serialized DEX validation passed for the final map/search fix and extension. All production Kotlin sources compiled, and the existing generator regenerated all eleven metadata entries from those compiled patches. Full Gradle bundle compilation is separately blocked by missing GitHub Packages authentication on this host. The public 1.2.1 release exists; the prepared 1.2.2 metadata requires its matching bundle to be built and published. CI's underscore credential aliases are now read as fallbacks to the dotted Gradle properties. Don't describe standalone validation as a successful Gradle release build or claim that an unpublished download URL is live.
 
-Release/version automation is metadata-only: run `.github/scripts/prepare_release.py` locally, or manually dispatch **Prepare Vibe Patch release** on main. Ordinary CI uses `--check` and fails on generated diffs. `generatePatchesList` compiles JVM classes without building Android extensions or testing an APK. Use dotted CI credential environment properties for both plugin and dependency repositories. No release framework remains; publishing a matching bundle is separate. See the newest validation section for the isolated Gradle evidence and local authentication limitation.
+Manually dispatch **Build and release Vibe Patch** on main to bump the version, build/test and validate its Android bundle, commit generated metadata and publish the matching GitHub release asset. The script's `--build` option reuses `compile.sh`; local script runs do not commit or publish. Ordinary CI uses `--check` and stays metadata-only, failing on generated diffs. `generatePatchesList` compiles JVM classes without building Android extensions or testing an APK. Use dotted CI credential environment properties for both plugin and dependency repositories. No release framework remains. See the newest validation section for checks and the local authentication limitation.
 
 ## Source map
 
@@ -48,11 +48,11 @@ Release/version automation is metadata-only: run `.github/scripts/prepare_releas
 | `compile.sh` | Bash build entry point; Java/SDK environment, optional reference APK and Gradle arguments. |
 | `shell.nix` | NixOS Java 21, Android SDK binary libraries and scrcpy development environment. |
 | `scripts/start-android-gpu.sh` | KVM/host-GPU emulator startup/window reuse. |
-| `.github/workflows/release.yml`, `.github/scripts/prepare_release.py`, `.github/scripts/ExportPatchMetadata.java` | Manual main-branch version bump and metadata commit; shared JVM-only generation path. No Android build/publication. |
+| `.github/workflows/release.yml`, `.github/scripts/prepare_release.py`, `.github/scripts/ExportPatchMetadata.java` | Manual main-branch version bump, Android build/validation, metadata commit and release publication; ordinary CI uses the shared JVM-only generation path. |
 | `docs/build-and-release.md` | Local/CI prerequisites, GitHub secrets and release triggers. |
 | `scripts/validate-yanosik.ps1` | Standalone Kotlin/reference-APK validation with an explicitly supplied patcher runtime. |
 | `scripts/validate-migration.py` | Structural collection, metadata, resource and stale-reference checks. |
-| `scripts/test_release_build.py` | Isolated canonical-version, generation, idempotence, URL and CI-diff checks; no APK build, network or publication. |
+| `scripts/test_release_build.py` | Isolated canonical-version, generation, bundle identity/DEX/failure, URL and CI-diff checks; no APK build, network or publication. |
 | `patches-list.json`, `.github/scripts/generate_patches_readme.py` | Generated patch metadata and README patch table. |
 | `docs/yanosik-migration-files.json` | Inventory of migration changes. |
 | `apk/`, `reverse/`, `.tools/`, `.gradle-user/`, `**/build/` | Local APKs, reverse-engineering tools, inspection data, caches and generated artifacts. Do not commit downloaded tools, credentials, APKs or intermediate DEX. |
@@ -77,7 +77,7 @@ The simplest Windows build is:
 .\compile.bat
 ```
 
-It sets Java 21, uses `%LOCALAPPDATA%\Android\Sdk` and `%USERPROFILE%\.gradle`, refreshes dependencies, and runs `:patches:buildVibePatch` plus `:patches:test` against `apk/yanosik_antisplit.apk`. That task is an alias for `buildAndroid`. The JDK path is machine-specific; verify it if this checkout moves. Linux/macOS builds use `bash compile.sh`; see `docs/build-and-release.md` for environment variables and CI credentials. Current CI checks metadata only; it does not build or test an APK.
+It sets Java 21, uses `%LOCALAPPDATA%\Android\Sdk` and `%USERPROFILE%\.gradle`, refreshes dependencies, and runs `:patches:buildVibePatch` plus `:patches:test` against `apk/yanosik_antisplit.apk`. That task is an alias for `buildAndroid`. The JDK path is machine-specific; verify it if this checkout moves. Linux/macOS builds use `bash compile.sh`; see `docs/build-and-release.md` for environment variables and CI credentials. Ordinary CI checks metadata only. The manual release builds the Android bundle; its reference-APK test skips because CI has no local APK.
 
 For complete validation after a patch change:
 
@@ -93,7 +93,7 @@ git diff --check
 
 Use an available Python 3 executable if `python` is not on PATH. `compile.bat` alone does not regenerate the complete index or README. Generate metadata from compiled patches rather than inventing index entries. When editing resource strings, run `checkStringResources`.
 
-The single Android bundle is `patches/build/libs/vibe-patch-<version>.mpp`, whether built with `buildAndroid` or its `buildVibePatch` alias. Read the version from `gradle.properties`. Do not deliver `-sources.mpp` or `-javadoc.mpp`. Do not reintroduce a copy task creating a second installable bundle. Release preparation bumps the canonical Gradle version and regenerates metadata without an Android build. It commits the prepared URL; the matching versioned asset must be built and published separately. Ordinary CI uses the same script with `--check` and fails on a generated diff. Bundle display name and icon guidance are in `docs/vibe-patch-branding.md`.
+The single Android bundle is `patches/build/libs/vibe-patch-<version>.mpp`, whether built with `buildAndroid` or its `buildVibePatch` alias. Read the version from `gradle.properties`. Do not deliver `-sources.mpp` or `-javadoc.mpp`. Do not reintroduce a copy task creating a second installable bundle. Manual release preparation uses `--bump <part> --build`, validates that exact bundle before committing metadata, and publishes it at `v<version>` with the prepared commit as target. Ordinary CI uses the same script with `--check` and fails on a generated diff without an Android build. Bundle display name and icon guidance are in `docs/vibe-patch-branding.md`.
 
 The `.mpp` is a patch bundle, not an installable Android APK. The user must import it, select the patches, patch the original compatible APK, and install the resulting APK. Updating the bundle alone does not update an installed app.
 

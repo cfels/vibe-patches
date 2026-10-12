@@ -1,4 +1,4 @@
-name: Prepare Vibe Patch release
+name: Build and release Vibe Patch
 
 on:
   workflow_dispatch:
@@ -38,27 +38,57 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Set up Android SDK for Gradle configuration
+      - name: Set up Android SDK
         uses: android-actions/setup-android@v4
+
+      - name: Install Android SDK components
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
 
       - name: Cache Gradle
         uses: burrunan/gradle-cache-action@v3
 
-      - name: Bump version and regenerate metadata
+      - name: Bump version, build and regenerate metadata
         env:
           BUMP: ${{ inputs.bump }}
-        run: python3 .github/scripts/prepare_release.py --bump "$BUMP"
+        run: python3 .github/scripts/prepare_release.py --bump "$BUMP" --build
 
       - name: Check release automation
         run: python3 scripts/test_release_build.py
 
+      - name: Locate versioned bundle
+        id: bundle
+        run: |
+          version=$(awk -F= '/^version[[:space:]]*=/ {gsub(/[[:space:]\r]/,"",$2); print $2}' gradle.properties)
+          printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
+          printf 'path=patches/build/libs/vibe-patch-%s.mpp\n' "$version" >> "$GITHUB_OUTPUT"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: vibe-patch-${{ steps.bundle.outputs.version }}
+          path: ${{ steps.bundle.outputs.path }}
+          if-no-files-found: error
+
       - name: Commit and push generated files
+        id: prepared
+        env:
+          VERSION: ${{ steps.bundle.outputs.version }}
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          version=$(awk -F= '/^version[[:space:]]*=/ {gsub(/[[:space:]\r]/,"",$2); print $2}' gradle.properties)
           git add gradle.properties patches-list.json patches-bundle.json README.md
           git diff --cached --check
-          git commit -m "chore: prepare v${version} [skip ci]"
+          git commit -m "chore: prepare v${VERSION} [skip ci]"
           git push origin HEAD:main
-          printf 'Prepared v%s and pushed version/metadata to main. Publish the matching vibe-patch-%s.mpp release asset before updating Morphe.\n' "$version" "$version" >> "$GITHUB_STEP_SUMMARY"
+          printf 'commit=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish versioned release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ steps.bundle.outputs.version }}
+          COMMIT: ${{ steps.prepared.outputs.commit }}
+          BUNDLE: ${{ steps.bundle.outputs.path }}
+        run: |
+          gh release create "v$VERSION" "$BUNDLE" --target "$COMMIT" --title "Vibe Patch $VERSION" --generate-notes
+          printf 'Released Vibe Patch %s with vibe-patch-%s.mpp.\n' "$VERSION" "$VERSION" >> "$GITHUB_STEP_SUMMARY"
