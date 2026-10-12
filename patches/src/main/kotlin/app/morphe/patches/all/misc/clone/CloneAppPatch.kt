@@ -58,10 +58,9 @@ fun setOrGetFallbackPackageName(fallbackPackageName: String): String {
 
 @Suppress("unused")
 val cloneAppPatch = resourcePatch(
-    name = "Clone app",
-    description = "Lets you install another copy of the app by giving it a different package name. " +
-            "Adds \".morphe\" by default; each copy needs its own name. " +
-            "Some apps don't handle cloning well and may crash or behave strangely.",
+    name = "Install a second copy",
+    description = "Install another copy using a different package name. Adds \".morphe\" by default; " +
+            "each copy needs its own name. Some apps don't support cloning and may crash or lose features.",
     default = false
 ) {
     packageNameOption = stringOption(

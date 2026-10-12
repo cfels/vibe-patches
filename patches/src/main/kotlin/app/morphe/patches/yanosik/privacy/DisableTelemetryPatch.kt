@@ -195,16 +195,14 @@ private val telemetryTargets = buildList {
 
 @Suppress("unused")
 val disableTelemetryPatch = bytecodePatch(
-    name = "Disable telemetry",
-    description = "Stops Yanosik's usage analytics, ad statistics and location targeting, Wi-Fi/app scans, ProxiCloud tracking, " +
-        "Notinote sample uploads, Firebase analytics and crash uploads, Facebook app events, and RevenueCat requests and diagnostics. " +
-        "RevenueCat purchases and subscription syncing are disabled too. Online navigation and account " +
-        "requests still send the data they need; this isn't an offline mode or a network-wide blocker."
+    name = "Reduce tracking",
+    description = "Stop the tracking and ad-reporting services covered by this patch, including usage analytics, " +
+        "location targeting, Wi-Fi/app scans and crash uploads. Also blocks RevenueCat, so purchases and " +
+        "subscription syncing won't work. Navigation and sign-in stay online and may still send identifiers or location."
 ) {
     compatibleWith(COMPATIBILITY_YANOSIK)
     dependsOn(referenceVersionPatch, disableTelemetryResourcesPatch)
     execute {
-        // Resolve every required target before mutating any method.
         val resolved = telemetryTargets.map { it to it.fingerprint.method }
         resolved.forEach { (target, method) ->
             if (target.afterSuper) {

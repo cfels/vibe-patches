@@ -47,9 +47,9 @@ internal object AdvertisingCampaignVoiceFingerprint : Fingerprint(
 
 @Suppress("unused")
 val disableVoiceAdsPatch = bytecodePatch(
-    name = "Disable voice ads",
-    description = "Mutes sponsored voice ads and spoken ad campaigns so they don't interrupt your drive. " +
-        "You still get navigation directions and road warnings, with the same audio controls."
+    name = "Mute voice ads",
+    description = "Keep your drive free of sponsored audio and spoken ad campaigns. " +
+        "Navigation directions and road warnings still play normally."
 ) {
     compatibleWith(COMPATIBILITY_YANOSIK)
     dependsOn(referenceVersionPatch)

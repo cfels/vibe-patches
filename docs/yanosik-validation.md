@@ -1,5 +1,21 @@
 # Yanosik validation
 
+## NixOS, Material 3 settings and 1.2.1 — 12 October 2026
+
+The user confirmed all patches work in their testing, approved the dark theme and Material 3 switch, and explicitly requested ending further testing. The final supplied screenshot also confirms the Appearance subtitle is gone. No further phone QA is required for these completed requests unless the user asks or a later behavior change needs a targeted check. This is the user's confirmation, not a new claim of comprehensive road/audio/backend coverage.
+
+The workspace now runs on NixOS. `shell.nix` supplies Java 21 and the Android SDK binary libraries. SDK platform 36 and the API 37 Google APIs image were installed. The `Vibe_API_37` AVD booted with KVM on `emulator-5554`; a native Wayland scrcpy window provides the phone UI because the emulator's Qt window couldn't connect to the desktop X display. The user handled sign-in.
+
+Dark login styling preserves the Google button's original white surface, gray label and colored logo. Login hints and outlines have explicit readable colors. Vibe settings uses a native Android switch with Material 3 track/thumb styling; the APK only supplies the older Material 2 SwitchMaterial. The new control keeps native switch input, animation and accessibility. The subtitle was removed, and dark system-bar appearance uses the current Android API after layout.
+
+Before the user ended QA, standalone compilation and real reference-APK application passed with Morphe Patcher 1.14.0: 73 intended methods, 147,149 unrelated instruction/reference outlines, manifest/resource guards and negative package/version/missing-target checks. The reference APK's SHA-256 remains `78e5b1064ae0f774f9eed2b09c46998128ee6a2906f0a8cde57b766e8b1e300d`. The final subtitle-free extension passed serialized checks with 36 methods/eight classes, including the Google exception, Material 3 drawing, activity/preference gates and saved toggle. Standalone D8 emits direct system-bar API calls; the validator also retains checks for the equivalent AGP-generated outline pair.
+
+All production Kotlin sources compiled after the wording changes. The official public 1.47.0 bundle supplied the existing library classes as an ignored local compile classpath; no removed collection was restored to production. The existing metadata generator exported eleven compiled patches, retaining defaults, options, dependency metadata and exact compatibility. README was regenerated, structural/whitespace checks passed, and all six Yanosik targets now have `isExperimental=false`. Version is 1.2.1 in Gradle and both metadata files. AGENTS.md records the user's confirmation and request to stop QA.
+
+The final APK is `patches/build/yanosik-emulator/yanosik-26.9.0-login-material-test.apk`. It has a verified local APK v3 signature and was installed with `adb -s emulator-5554 install --no-incremental -r`, preserving data and sign-in. A signing attempt using the same password file for two explicit password reads failed at EOF; using the PKCS12 store password once resolved it. Credentials and the test key remain in ignored local files.
+
+The full Gradle build still stops at settings plugin resolution because this host has no configured GitHub Packages credentials; the registry returned HTTP 401. Java 21 and the NixOS runtime don't remove that authentication requirement. No new Gradle-built `.mpp` or published release is claimed. The 1.2.1 download URL is prepared release metadata and isn't claimed to be live.
+
 ## All six patches, Vibe Patched tile and voice follow-up — 10 October 2026
 
 The user signed in to the existing API 37 emulator and explicitly confirmed local PRO, the Vibe Patched tile and banner suppression work. The home PRO shortcut now displays the supplied `patches-bundle.png` with **Vibe Patched** underneath. Both action codes 68/70 bind the same decorative tile. Its click listener is cleared and clicking is disabled; the grid models and neighboring actions remain intact. Screenshot/UI hierarchy checks showed the exact image and label, and tapping both the image and label left the home screen unchanged. Evidence: `.tools/telemetry-vibe-home-before.png`, `.tools/telemetry-vibe-home-after.png` and their XML files.

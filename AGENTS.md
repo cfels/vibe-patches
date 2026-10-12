@@ -6,10 +6,18 @@ This file applies throughout this repository. Follow the user's current request 
 
 1. Check `git status --short`. This workspace contains an ongoing migration with many intentional deletions and uncommitted changes. Do not reset, restore or clean those changes as a troubleshooting step.
 2. Read `docs/yanosik.md` for supported targets, exact patch behavior and feature boundaries.
-3. Read the newest dated section of `docs/yanosik-validation.md` for commands and results. Older sections describe historical failures; GitHub Packages access and the full build were working on 10 October 2026.
+3. Read the newest dated section of `docs/yanosik-validation.md` for commands and results. The workspace moved to NixOS on 12 October 2026. The Windows full build worked on 10 October; this host still needs GitHub Packages credentials for Gradle.
 4. Search production source first. Search decompiled APK content separately when investigating app behavior.
 
 The current collection has six Yanosik patches and five public universal patches. YouTube, YouTube Music and Reddit were intentionally removed. Historical changelog/archive references do not mean these collections should be restored.
+
+## Current progress — 12 October 2026
+
+The user confirmed that all patches work in their testing and explicitly requested ending further phone QA. Treat the patches as working for the user's tested use cases; don't reopen the completed validation campaign unless the user asks or a new behavior change needs a targeted check. This confirmation doesn't claim new road/audio/backend coverage beyond the recorded observations.
+
+The API 37 NixOS AVD is `Vibe_API_37`, on `emulator-5554`. It runs with KVM inside `nix-shell`; `scrcpy` provides the Wayland phone window. The user signed in and confirmed the dark theme, Material 3 switch and final subtitle-free dialog. The current test APK includes the dark login fix, original white Google button and native switch with Material 3 styling. Vibe settings no longer shows the Appearance subtitle. Version is now 1.2.1, public patch names/descriptions use friendly wording, and Yanosik 26.9.0 compatibility no longer has the Experimental tag. Package/version guards and the minimum SDK remain unchanged.
+
+Use the ignored `patches/build/yanosik-emulator/yanosik-26.9.0-login-material-test.apk` for this emulator. Its local test key lives under `.tools`; preserve app data/sign-in and don't replace the key or uninstall the app. Standalone compilation and real APK/serialized DEX validation passed before the final wording/subtitle changes. All production Kotlin sources subsequently compiled, and the existing generator regenerated all eleven metadata entries from those compiled patches. Full Gradle bundle compilation is separately blocked by missing GitHub Packages authentication on this host. Don't describe standalone validation as a successful Gradle release build or claim that an unpublished download URL is live.
 
 ## Source map
 
@@ -33,6 +41,7 @@ The current collection has six Yanosik patches and five public universal patches
 | `settings.gradle.kts`, `gradle/libs.versions.toml` | Plugin repositories, credentials lookup, module configuration and dependency versions. |
 | `compile.bat` | Windows build entry point with local Java/SDK/APK settings. |
 | `compile.sh` | Bash build entry point; Java/SDK environment, optional reference APK and Gradle arguments. |
+| `shell.nix` | NixOS Java 21, Android SDK binary libraries and scrcpy development environment. |
 | `.github/workflows/release.yml`, `.releaserc`, `.github/scripts/prepare_release.py` | Main-branch build and semantic-release; exact-version build, metadata verification and one staged release asset. |
 | `docs/build-and-release.md` | Local/CI prerequisites, GitHub secrets and release triggers. |
 | `scripts/validate-yanosik.ps1` | Standalone Kotlin/reference-APK validation with an explicitly supplied patcher runtime. |
@@ -54,7 +63,9 @@ Local inspection paths are conveniences, not guaranteed dependencies on another 
 
 ## Build and validate
 
-Run commands from the repository root in PowerShell. The simplest local build is:
+On NixOS, enter `nix-shell` from the repository root and run `bash compile.sh --no-daemon`. Keep GitHub Packages credentials in the user Gradle home or environment. The following PowerShell commands describe the previous Windows environment.
+
+The simplest Windows build is:
 
 ```powershell
 .\compile.bat
@@ -129,6 +140,6 @@ Write public descriptions and README copy in a friendly, conversational voice, l
 
 Run checks appropriate to the edited code. A documentation-only change needs source/path review and whitespace checks, not a new APK build. For release automation, run `python scripts/test_release_build.py` and a workflow checker, then verify the release task combination from `prepare_release.py`. In a restricted Windows sandbox, direct `TEMP`/`TMP` to an ignored workspace directory for the tests. Update coverage and validation documents when behavior changes. Keep license/copyright notices and intentional migration deletions.
 
-Report what changed, which checks actually ran, the delivered artifact path and remaining runtime limits. DEX write/read validation compares unrelated instruction/reference outlines; it is not a byte-for-byte operand comparison. The API 37 emulator has the signed test APK and official Morphe Manager. The user signed in; sidebar card removal, local PRO badge, settings choices and map launch were observed. The user confirmed the Application PRO switch disappeared after the update. Full route/audio/overlay/backend QA remains unverified. Consult the newest validation section before repeating work.
+Report what changed, which checks actually ran, the delivered artifact path and remaining runtime limits. DEX write/read validation compares unrelated instruction/reference outlines; it is not a byte-for-byte operand comparison. The previous Windows API 37 emulator had the signed test APK and official Morphe Manager; its sidebar card removal, local PRO badge, settings choices and map launch were observed. The user confirmed the Application PRO switch disappeared after that update. The current NixOS progress and user's confirmation are recorded above. Full route/audio/overlay/backend QA remains outside the recorded coverage. Respect the user's request to stop QA and consult the newest validation section before proposing more testing.
 
 Use `adb -s emulator-5554` explicitly when testing this emulator. The local test APK uses an ignored test keystore, not the publisher's signing key. Do not uninstall an existing app to resolve a signing mismatch without authorization, because that deletes its data. Leave credentials and account sign-in to the user. Keep screenshots, intermediate DEX and test APKs in ignored local output directories.

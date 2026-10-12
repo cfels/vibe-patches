@@ -1,15 +1,23 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "patches": [
     {
-      "name": "Change installer source",
-      "description": "Makes the app think it was installed from the store you choose, like Google Play.",
+      "name": "Block Play Store updates",
+      "description": "Keep the Play Store from replacing your patched app by raising its version code to Android's limit. Some apps may have compatibility issues, and root-mounted installs aren't supported.",
       "default": false,
       "category": null,
+      "compatiblePackages": null,
+      "options": [],
       "dependencies": [
-        "BytecodePatch"
-      ],
+        "ResourcePatch"
+      ]
+    },
+    {
+      "name": "Choose install source",
+      "description": "Choose which app store the app sees as its installer, such as Google Play.",
+      "default": false,
+      "category": null,
       "compatiblePackages": null,
       "options": [
         {
@@ -27,14 +35,83 @@
             "Xiaomi GetApps": "com.xiaomi.mipicks"
           }
         }
+      ],
+      "dependencies": [
+        "BytecodePatch"
       ]
     },
     {
-      "name": "Clone app",
-      "description": "Lets you install another copy of the app by giving it a different package name. Adds \".morphe\" by default; each copy needs its own name. Some apps don't handle cloning well and may crash or behave strangely.",
+      "name": "Enable local PRO",
+      "description": "Turn on PRO features controlled by the app and keep the Switch to PRO toggle out of settings. This doesn't create a purchase or unlock server-only perks.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "pl.neptis.yanosik.mobi.android",
+          "name": "Yanosik",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": null,
+          "signatures": null,
+          "targets": [
+            {
+              "version": "26.9.0",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 29,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": [],
+      "dependencies": [
+        "BytecodePatch"
+      ]
+    },
+    {
+      "name": "Hide banner ads",
+      "description": "Clear banner ads and their empty spaces from the map, navigation and home screen. Road alerts and route controls stay in place.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "pl.neptis.yanosik.mobi.android",
+          "name": "Yanosik",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": null,
+          "signatures": null,
+          "targets": [
+            {
+              "version": "26.9.0",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 29,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": [],
+      "dependencies": [
+        "BytecodePatch"
+      ]
+    },
+    {
+      "name": "Inspect app traffic",
+      "description": "Let a debugging proxy inspect the app's traffic by bypassing certificate pinning.",
       "default": false,
       "category": null,
-      "dependencies": [],
+      "compatiblePackages": null,
+      "options": [],
+      "dependencies": []
+    },
+    {
+      "name": "Install a second copy",
+      "description": "Install another copy using a different package name. Adds \".morphe\" by default; each copy needs its own name. Some apps don't support cloning and may crash or lose features.",
+      "default": false,
+      "category": null,
       "compatiblePackages": null,
       "options": [
         {
@@ -66,27 +143,43 @@
           "default": true,
           "values": null
         }
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "Mute voice ads",
+      "description": "Keep your drive free of sponsored audio and spoken ad campaigns. Navigation directions and road warnings still play normally.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "pl.neptis.yanosik.mobi.android",
+          "name": "Yanosik",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": null,
+          "signatures": null,
+          "targets": [
+            {
+              "version": "26.9.0",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 29,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": [],
+      "dependencies": [
+        "BytecodePatch"
       ]
     },
     {
-      "name": "Disable Play Store updates",
-      "description": "Stops Play Store updates by setting the app's version code to the highest Android allows. Can cause issues in some apps and won't work with root-mounted installs.",
-      "default": false,
-      "category": null,
-      "dependencies": [
-        "ResourcePatch"
-      ],
-      "compatiblePackages": null,
-      "options": []
-    },
-    {
-      "name": "Disable startup ad campaigns",
-      "description": "Skips the ad campaigns shown when you open Yanosik, even ones already saved on your phone. Normal startup messages and account checks stay as they are.",
+      "name": "Reduce tracking",
+      "description": "Stop the tracking and ad-reporting services covered by this patch, including usage analytics, location targeting, Wi-Fi/app scans and crash uploads. Also blocks RevenueCat, so purchases and subscription syncing won't work. Navigation and sign-in stay online and may still send identifiers or location.",
       "default": true,
       "category": null,
-      "dependencies": [
-        "BytecodePatch"
-      ],
       "compatiblePackages": [
         {
           "packageName": "pl.neptis.yanosik.mobi.android",
@@ -99,53 +192,24 @@
             {
               "version": "26.9.0",
               "versionCodes": null,
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": 29,
               "description": null
             }
           ]
         }
       ],
-      "options": []
-    },
-    {
-      "name": "Disable telemetry",
-      "description": "Stops Yanosik's usage analytics, ad statistics and location targeting, Wi-Fi/app scans, ProxiCloud tracking, Notinote sample uploads, Firebase analytics and crash uploads, Facebook app events, and RevenueCat requests and diagnostics. RevenueCat purchases and subscription syncing are disabled too. Online navigation and account requests still send the data they need; this isn't an offline mode or a network-wide blocker.",
-      "default": true,
-      "category": null,
+      "options": [],
       "dependencies": [
         "BytecodePatch",
         "ResourcePatch"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "pl.neptis.yanosik.mobi.android",
-          "name": "Yanosik",
-          "description": null,
-          "apkFileType": null,
-          "appIconColor": null,
-          "signatures": null,
-          "targets": [
-            {
-              "version": "26.9.0",
-              "versionCodes": null,
-              "isExperimental": true,
-              "minSdk": 29,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
+      ]
     },
     {
-      "name": "Disable voice ads",
-      "description": "Mutes sponsored voice ads and spoken ad campaigns so they don't interrupt your drive. You still get navigation directions and road warnings, with the same audio controls.",
+      "name": "Skip startup ads",
+      "description": "Open Yanosik without startup ads, including campaigns already saved on your phone. Regular startup messages and account checks still work.",
       "default": true,
       "category": null,
-      "dependencies": [
-        "BytecodePatch"
-      ],
       "compatiblePackages": [
         {
           "packageName": "pl.neptis.yanosik.mobi.android",
@@ -158,61 +222,34 @@
             {
               "version": "26.9.0",
               "versionCodes": null,
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": 29,
               "description": null
             }
           ]
         }
       ],
-      "options": []
-    },
-    {
-      "name": "Hide banner ads",
-      "description": "Gets rid of banner ads on the map, during navigation and on the dashboard, including ad placeholders. Keeps road alerts and route controls in place.",
-      "default": true,
-      "category": null,
+      "options": [],
       "dependencies": [
         "BytecodePatch"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "pl.neptis.yanosik.mobi.android",
-          "name": "Yanosik",
-          "description": null,
-          "apkFileType": null,
-          "appIconColor": null,
-          "signatures": null,
-          "targets": [
-            {
-              "version": "26.9.0",
-              "versionCodes": null,
-              "isExperimental": true,
-              "minSdk": 29,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
+      ]
     },
     {
-      "name": "Override certificate pinning",
-      "description": "Lets you inspect the app's network traffic through a proxy by bypassing certificate pinning.",
+      "name": "Use the original app signature",
+      "description": "Let the app see its original APK signature when it checks its own package.",
       "default": false,
       "category": null,
-      "dependencies": [],
       "compatiblePackages": null,
-      "options": []
-    },
-    {
-      "name": "Override local PRO checks",
-      "description": "Keeps local PRO mode on and opens up the PRO settings. Hides the Switch to PRO toggle. Purchases and server-side perks aren't changed.",
-      "default": true,
-      "category": null,
+      "options": [],
       "dependencies": [
         "BytecodePatch"
-      ],
+      ]
+    },
+    {
+      "name": "Vibe settings and fewer PRO prompts",
+      "description": "Open Vibe settings from the home screen and choose a saved dark theme with a Material 3 toggle. Dark mode starts on. Hides PRO upgrade cards and purchase pages, plus donation prompts in settings. Direct donation and voucher pages still open.",
+      "default": true,
+      "category": null,
       "compatiblePackages": [
         {
           "packageName": "pl.neptis.yanosik.mobi.android",
@@ -225,56 +262,19 @@
             {
               "version": "26.9.0",
               "versionCodes": null,
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": 29,
               "description": null
             }
           ]
         }
       ],
-      "options": []
-    },
-    {
-      "name": "Spoof signature",
-      "description": "Makes the app see the original APK's signature when it checks its own package.",
-      "default": false,
-      "category": null,
-      "dependencies": [
-        "BytecodePatch"
-      ],
-      "compatiblePackages": null,
-      "options": []
-    },
-    {
-      "name": "Suppress Premium promotions",
-      "description": "Replaces the home PRO shortcut with Vibe settings. Dark mode starts on, uses #1f1e1f on your home screen, sidebar and login screens, and remembers your choice. Hides PRO promo cards, the sidebar upgrade card and donation prompts in settings, and closes the PRO page. Direct donation and voucher pages stay available.",
-      "default": true,
-      "category": null,
+      "options": [],
       "dependencies": [
         "BytecodePatch",
         "ResourcePatch",
         "ResourcePatch"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "pl.neptis.yanosik.mobi.android",
-          "name": "Yanosik",
-          "description": null,
-          "apkFileType": null,
-          "appIconColor": null,
-          "signatures": null,
-          "targets": [
-            {
-              "version": "26.9.0",
-              "versionCodes": null,
-              "isExperimental": true,
-              "minSdk": 29,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
+      ]
     }
   ]
 }

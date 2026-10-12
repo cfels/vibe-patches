@@ -114,10 +114,10 @@ internal const val PREMIUM_PROMOTION_GUARD = """
 
 @Suppress("unused")
 val suppressPremiumPromotionsPatch = bytecodePatch(
-    name = "Suppress Premium promotions",
-    description = "Replaces the home PRO shortcut with Vibe settings. Dark mode starts on, uses #1f1e1f on your home screen, sidebar and login screens, and remembers your choice. " +
-        "Hides PRO promo cards, the sidebar upgrade card and donation prompts in settings, and closes the PRO page. " +
-        "Direct donation and voucher pages stay available."
+    name = "Vibe settings and fewer PRO prompts",
+    description = "Open Vibe settings from the home screen and choose a saved dark theme with a Material 3 toggle. " +
+        "Dark mode starts on. Hides PRO upgrade cards and purchase pages, plus donation prompts in settings. " +
+        "Direct donation and voucher pages still open."
 ) {
     compatibleWith(COMPATIBILITY_YANOSIK)
     dependsOn(referenceVersionPatch, homePatchedTileResourcesPatch, hideSettingsDonationResourcesPatch)

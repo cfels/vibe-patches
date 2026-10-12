@@ -13,8 +13,8 @@ import app.morphe.patches.all.misc.fix.changepackageinstaller.changePackageInsta
 
 @Suppress("unused")
 val changeInstallerSource = resourcePatch(
-    name = "Change installer source",
-    description = "Makes the app think it was installed from the store you choose, like Google Play.",
+    name = "Choose install source",
+    description = "Choose which app store the app sees as its installer, such as Google Play.",
     default = false
 ) {
     val packageInstallerName = stringOption(

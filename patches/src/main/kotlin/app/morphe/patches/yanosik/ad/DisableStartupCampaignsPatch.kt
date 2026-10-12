@@ -37,9 +37,9 @@ internal object StartupCampaignSelectionFingerprint : Fingerprint(
 
 @Suppress("unused")
 val disableStartupCampaignsPatch = bytecodePatch(
-    name = "Disable startup ad campaigns",
-    description = "Skips the ad campaigns shown when you open Yanosik, even ones already saved " +
-        "on your phone. Normal startup messages and account checks stay as they are."
+    name = "Skip startup ads",
+    description = "Open Yanosik without startup ads, including campaigns already saved on your phone. " +
+        "Regular startup messages and account checks still work."
 ) {
     compatibleWith(COMPATIBILITY_YANOSIK)
     dependsOn(referenceVersionPatch)

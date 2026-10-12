@@ -235,6 +235,7 @@ fun validateReferenceApk(apk: File, workspace: File) {
     }.associateBy(::descriptor)
     check(changedMethods.all { it in originals }) { "Missing Yanosik reference methods" }
     verifyVoiceAdvertisingRoutes(originals.values)
+    verifyVibeSettingsTargets(originals.values)
 
     val slots = originalDex.dexEntryNames.flatMap { name ->
         originalDex.getEntry(name)!!.dexFile.classes.filter { it.type == "Li9f;" }

@@ -44,11 +44,11 @@ for patch in data['patches']:
             yanosik.append(patch)
             assert [t['version'] for t in target['targets']] == ['26.9.0']
             assert target['targets'][0]['minSdk'] == 29
+            assert target['targets'][0]['isExperimental'] is False
 names = [p['name'] for p in yanosik]
 assert len(names) == len(set(names)) == 6, f'Unexpected Yanosik index: {names}'
-assert set(names) == {'Hide banner ads', 'Disable startup ad campaigns',
-                      'Disable voice ads', 'Suppress Premium promotions',
-                          'Override local PRO checks', 'Disable telemetry'}
+assert set(names) == {'Hide banner ads', 'Skip startup ads', 'Mute voice ads',
+                      'Vibe settings and fewer PRO prompts', 'Enable local PRO', 'Reduce tracking'}
 declared = []
 for path in (SOURCE/'yanosik').rglob('*.kt'):
     declared.extend(re.findall(r'bytecodePatch\(\s*name = "([^"]+)"', path.read_text()))

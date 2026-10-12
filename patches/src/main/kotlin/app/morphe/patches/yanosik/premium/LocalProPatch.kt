@@ -83,9 +83,9 @@ internal const val LOCAL_PRO_STATUS = """
 
 @Suppress("unused")
 val overrideLocalProChecksPatch = bytecodePatch(
-    name = "Override local PRO checks",
-    description = "Keeps local PRO mode on and opens up the PRO settings. " +
-        "Hides the Switch to PRO toggle. Purchases and server-side perks aren't changed."
+    name = "Enable local PRO",
+    description = "Turn on PRO features controlled by the app and keep the Switch to PRO toggle out of settings. " +
+        "This doesn't create a purchase or unlock server-only perks."
 ) {
     compatibleWith(COMPATIBILITY_YANOSIK)
     dependsOn(referenceVersionPatch)

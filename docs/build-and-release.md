@@ -18,6 +18,26 @@ The Bash script uses `${GRADLE_USER_HOME:-$HOME/.gradle}` and passes additional 
 
 The reference APK defaults to `apk/yanosik_antisplit.apk`. On Bash, set `YANOSIK_APK=/absolute/path/to/yanosik.apk` to choose another location. An explicitly supplied missing APK fails immediately. Without a reference APK, the Bash build succeeds but the Yanosik integration test skips; this is not reference-APK validation. Local APKs are intentionally excluded from Git.
 
+### NixOS
+
+Enter the repository's development shell before building:
+
+```bash
+nix-shell
+bash compile.sh --no-daemon
+```
+
+`shell.nix` uses your configured Nixpkgs, supplies Java 21 and the shared libraries needed by Google's Android SDK binaries, and uses your existing SDK at `${ANDROID_HOME:-$HOME/Android/Sdk}`. Install platform 36 and build-tools 36.0.0 in that SDK. GitHub Packages credentials are still required; the development shell doesn't provide them. A plugin-not-found error combined with HTTP 401 from the Morphe registry means package authentication is missing or invalid, rather than a missing NixOS library.
+
+For the API 37 test phone, install `system-images;android-37.0;google_apis;x86_64`, then run these commands inside the development shell:
+
+```bash
+avdmanager create avd -n Vibe_API_37 -k 'system-images;android-37.0;google_apis;x86_64' -d pixel_7
+emulator -avd Vibe_API_37 -port 5554 -gpu swiftshader -no-audio -no-boot-anim -no-window
+```
+
+Start a second development shell and run `scrcpy -s emulator-5554 --no-audio` to open the phone window. On a Wayland desktop where X display access is unavailable, use `SDL_VIDEODRIVER=wayland scrcpy -s emulator-5554 --no-audio`. Check hardware acceleration with `emulator -accel-check`. No NixOS system rebuild is needed when `/dev/kvm` is already accessible. The silent emulator configuration is for UI checks; it doesn't validate navigation audio.
+
 ## GitHub Actions setup
 
 Push these changes to your own GitHub repository and enable Actions. `.github/workflows/release.yml` runs on pushes to **main** and can also be started from **Actions → Build and release Vibe Patch → Run workflow**, selecting main. Both build workflows explicitly set up Android's command-line tools with `android-actions/setup-android` before installing SDK platform 36 and build-tools 36.0.0, so they don't depend on `sdkmanager` already being on the runner's PATH.

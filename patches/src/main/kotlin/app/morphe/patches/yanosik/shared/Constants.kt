@@ -17,7 +17,7 @@ internal val COMPATIBILITY_YANOSIK = Compatibility(
     name = "Yanosik",
     packageName = PACKAGE_NAME,
     // The supplied antisplit APK is a reference, not proof of the publisher's signature.
-    targets = listOf(AppTarget(version = VERSION_NAME, minSdk = 29, isExperimental = true))
+    targets = listOf(AppTarget(version = VERSION_NAME, minSdk = 29, isExperimental = false))
 )
 
 internal fun requireReferenceVersion(packageName: String, versionName: String) {

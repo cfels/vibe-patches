@@ -43,24 +43,24 @@ All modifications made by Morphe, along with their dates, can be found in the Gi
 Here's what each patch does. The descriptions below also show up in Morphe Manager, so you'll see the same wording when choosing patches. For the technical details and what's been tested, see the [Yanosik notes](docs/yanosik.md).
 
 <!-- PATCHES_START -->
-> **[v1.2.0](https://github.com/cfels/vibe-patches/releases/tag/v1.2.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;11 patches total
+> **[v1.2.1](https://github.com/cfels/vibe-patches/releases/tag/v1.2.1)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;11 patches total
 <details open>
 <summary>📦 Yanosik&nbsp;&nbsp;•&nbsp;&nbsp;6 patches</summary>
 <br>
 
 **🎯 Supported versions:**
 
-| 🧪&nbsp;26.9.0 |
+| 26.9.0 |
 | :---: |
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
-| [Disable startup ad campaigns](#disable-startup-ad-campaigns) | Skips the ad campaigns shown when you open Yanosik, even ones already saved on your phone. Normal startup messages and account checks stay as they are. |  |
-| [Disable telemetry](#disable-telemetry) | Stops Yanosik's usage analytics, ad statistics and location targeting, Wi-Fi/app scans, ProxiCloud tracking, Notinote sample uploads, Firebase analytics and crash uploads, Facebook app events, and RevenueCat requests and diagnostics. RevenueCat purchases and subscription syncing are disabled too. Online navigation and account requests still send the data they need; this isn't an offline mode or a network-wide blocker. |  |
-| [Disable voice ads](#disable-voice-ads) | Mutes sponsored voice ads and spoken ad campaigns so they don't interrupt your drive. You still get navigation directions and road warnings, with the same audio controls. |  |
-| [Hide banner ads](#hide-banner-ads) | Gets rid of banner ads on the map, during navigation and on the dashboard, including ad placeholders. Keeps road alerts and route controls in place. |  |
-| [Override local PRO checks](#override-local-pro-checks) | Keeps local PRO mode on and opens up the PRO settings. Hides the Switch to PRO toggle. Purchases and server-side perks aren't changed. |  |
-| [Suppress Premium promotions](#suppress-premium-promotions) | Replaces the home PRO shortcut with Vibe settings. Dark mode starts on, uses #1f1e1f on your home screen, sidebar and login screens, and remembers your choice. Hides PRO promo cards, the sidebar upgrade card and donation prompts in settings, and closes the PRO page. Direct donation and voucher pages stay available. |  |
+| [Enable local PRO](#enable-local-pro) | Turn on PRO features controlled by the app and keep the Switch to PRO toggle out of settings. This doesn't create a purchase or unlock server-only perks. |  |
+| [Hide banner ads](#hide-banner-ads) | Clear banner ads and their empty spaces from the map, navigation and home screen. Road alerts and route controls stay in place. |  |
+| [Mute voice ads](#mute-voice-ads) | Keep your drive free of sponsored audio and spoken ad campaigns. Navigation directions and road warnings still play normally. |  |
+| [Reduce tracking](#reduce-tracking) | Stop the tracking and ad-reporting services covered by this patch, including usage analytics, location targeting, Wi-Fi/app scans and crash uploads. Also blocks RevenueCat, so purchases and subscription syncing won't work. Navigation and sign-in stay online and may still send identifiers or location. |  |
+| [Skip startup ads](#skip-startup-ads) | Open Yanosik without startup ads, including campaigns already saved on your phone. Regular startup messages and account checks still work. |  |
+| [Vibe settings and fewer PRO prompts](#vibe-settings-and-fewer-pro-prompts) | Open Vibe settings from the home screen and choose a saved dark theme with a Material 3 toggle. Dark mode starts on. Hides PRO upgrade cards and purchase pages, plus donation prompts in settings. Direct donation and voucher pages still open. |  |
 
 </details>
 
@@ -70,11 +70,11 @@ Here's what each patch does. The descriptions below also show up in Morphe Manag
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
-| [Change installer source](#change-installer-source) | Makes the app think it was installed from the store you choose, like Google Play. | • App store to show |
-| [Clone app](#clone-app) | Lets you install another copy of the app by giving it a different package name. Adds ".morphe" by default; each copy needs its own name. Some apps don't handle cloning well and may crash or behave strangely. | • Package name<br>• Update permissions<br>• Update providers |
-| [Disable Play Store updates](#disable-play-store-updates) | Stops Play Store updates by setting the app's version code to the highest Android allows. Can cause issues in some apps and won't work with root-mounted installs. |  |
-| [Override certificate pinning](#override-certificate-pinning) | Lets you inspect the app's network traffic through a proxy by bypassing certificate pinning. |  |
-| [Spoof signature](#spoof-signature) | Makes the app see the original APK's signature when it checks its own package. |  |
+| [Block Play Store updates](#block-play-store-updates) | Keep the Play Store from replacing your patched app by raising its version code to Android's limit. Some apps may have compatibility issues, and root-mounted installs aren't supported. |  |
+| [Choose install source](#choose-install-source) | Choose which app store the app sees as its installer, such as Google Play. | • App store to show |
+| [Inspect app traffic](#inspect-app-traffic) | Let a debugging proxy inspect the app's traffic by bypassing certificate pinning. |  |
+| [Install a second copy](#install-a-second-copy) | Install another copy using a different package name. Adds ".morphe" by default; each copy needs its own name. Some apps don't support cloning and may crash or lose features. | • Package name<br>• Update permissions<br>• Update providers |
+| [Use the original app signature](#use-the-original-app-signature) | Let the app see its original APK signature when it checks its own package. |  |
 
 </details>
 

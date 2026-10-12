@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -20,7 +21,6 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
 public final class VibeSettings {
@@ -120,12 +120,6 @@ public final class VibeSettings {
         title.setTextColor(textColor);
         title.setTypeface(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD);
         heading.addView(title);
-        TextView subtitle = new TextView(dialogContext);
-        subtitle.setText("Appearance");
-        subtitle.setTextSize(13);
-        subtitle.setTextColor(secondary);
-        subtitle.setPadding(0, (int) (4 * density), 0, 0);
-        heading.addView(subtitle);
         content.addView(header, new LinearLayout.LayoutParams(-1, -2));
         View divider = new View(dialogContext);
         divider.setBackgroundColor(dark ? 0xff3a393a : 0xffececec);
@@ -152,14 +146,11 @@ public final class VibeSettings {
         explanation.setPadding(0, (int) (6 * density), (int) (12 * density), 0);
         explanation.setLineSpacing(2 * density, 1);
         labels.addView(explanation);
-        Switch toggle = new Switch(dialogContext);
+        CompoundButton toggle = new VibeSwitch(dialogContext, dark);
         toggle.setContentDescription("Dark mode");
         toggle.setMinHeight((int) (48 * density));
         toggle.setMinWidth((int) (56 * density));
         toggle.setChecked(preferences(context).getBoolean(DARK, true));
-        int[][] states = new int[][] { new int[] { android.R.attr.state_checked }, new int[] {} };
-        toggle.setThumbTintList(new android.content.res.ColorStateList(states, new int[] { accent, dark ? 0xffbdbdbd : 0xffeeeeee }));
-        toggle.setTrackTintList(new android.content.res.ColorStateList(states, new int[] { 0x99e72e38, dark ? 0xff555455 : 0xffbbbbbb }));
         row.addView(toggle, new LinearLayout.LayoutParams(-2, (int) (48 * density)));
         content.addView(row, new LinearLayout.LayoutParams(-1, -2));
         AlertDialog dialog = new AlertDialog.Builder(dialogContext).setView(content).create();
@@ -197,10 +188,15 @@ public final class VibeSettings {
         root.addOnAttachStateChangeListener(observer);
         host.getWindow().setStatusBarColor(VibeColors.BACKGROUND);
         host.getWindow().setNavigationBarColor(VibeColors.BACKGROUND);
+        applySystemBars(host);
+    }
+
+    static void applySystemBars(Activity host) {
         if (Build.VERSION.SDK_INT >= 30) {
             host.getWindow().getInsetsController().setSystemBarsAppearance(0, 24);
         } else {
-            root.setSystemUiVisibility(root.getSystemUiVisibility() & ~(8192 | 16));
+            View decor = host.getWindow().getDecorView();
+            decor.setSystemUiVisibility(decor.getSystemUiVisibility() & ~(8192 | 16));
         }
     }
 
@@ -210,6 +206,10 @@ public final class VibeSettings {
         String className = view.getClass().getName();
         Activity host = activity(view.getContext());
         if (host != null && host.getClass().getName().equals(ACCOUNT)) {
+            int googleLabel = view.getResources().getIdentifier("google_log_in", "string", host.getPackageName());
+            int button = view.getResources().getIdentifier("button", "id", host.getPackageName());
+            if (button != 0 && view.getId() == button && view instanceof TextView && googleLabel != 0 &&
+                    view.getResources().getString(googleLabel).contentEquals(((TextView) view).getText())) return;
             int container = view.getResources().getIdentifier("container", "id", host.getPackageName());
             String id = "";
             if (view.getId() != View.NO_ID) {
@@ -225,6 +225,15 @@ public final class VibeSettings {
                     android.content.res.ColorStateList hint = android.content.res.ColorStateList.valueOf(0xffbdbdbd);
                     view.getClass().getMethod("setDefaultHintTextColor", android.content.res.ColorStateList.class)
                             .invoke(view, hint);
+                    view.getClass().getMethod("setHintTextColor", ColorStateList.class)
+                            .invoke(view, ColorStateList.valueOf(0xffe72e38));
+                    ColorStateList stroke = new ColorStateList(new int[][] {
+                            new int[] { -android.R.attr.state_enabled },
+                            new int[] { android.R.attr.state_focused },
+                            new int[] { android.R.attr.state_hovered }, new int[] {} },
+                            new int[] { 0xff555455, 0xffe72e38, 0xffbdbdbd, 0xffbdbdbd });
+                    view.getClass().getMethod("setBoxStrokeColorStateList", ColorStateList.class)
+                            .invoke(view, stroke);
                     view.getClass().getMethod("setEndIconTintList", android.content.res.ColorStateList.class)
                             .invoke(view, android.content.res.ColorStateList.valueOf(VibeColors.TEXT));
                 } catch (ReflectiveOperationException ignored) {}
@@ -238,9 +247,7 @@ public final class VibeSettings {
                 if (VibeColors.isLightSurface(color.getDefaultColor()))
                     view.getClass().getMethod("setCardBackgroundColor", int.class)
                             .invoke(view, VibeColors.BACKGROUND);
-            } catch (ReflectiveOperationException ignored) {
-                // Ordinary descendants still receive their scoped theme.
-            }
+            } catch (ReflectiveOperationException ignored) {}
         }
         Drawable background = view.getBackground();
         if (background instanceof ColorDrawable &&
@@ -304,8 +311,7 @@ public final class VibeSettings {
             this.context = context; this.host = host; this.dialog = dialog;
         }
         public void onCheckedChanged(CompoundButton button, boolean enabled) {
-            // Write before recreation; the setting survives force-stop and process death.
-            if (preferences(context).edit().putBoolean("dark_home_sidebar", enabled).commit()) {
+            if (preferences(context).edit().putBoolean(DARK, enabled).commit()) {
                 dialog.dismiss();
                 host.recreate();
             }
@@ -320,10 +326,7 @@ public final class VibeSettings {
         public void run() {
             if (host.isDestroyed()) return;
             applyTree(root);
-            // The original edge-to-edge setup can run after onCreate. Repeat the
-            // scoped appearance after layout so clock/status icons remain readable.
-            View decor = host.getWindow().getDecorView();
-            decor.setSystemUiVisibility(decor.getSystemUiVisibility() & ~(8192 | 16));
+            applySystemBars(host);
         }
         public void onGlobalLayout() { run(); }
         public void onViewAttachedToWindow(View view) {}
