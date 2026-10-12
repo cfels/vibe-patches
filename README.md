@@ -4,9 +4,7 @@
 
 # Vibe Patch ☆
 
-My Yanosik patches, plus a few universal ones. Ads, tracking, PRO nags and some other stuff. Pick what you want.
-
-Made for **Yanosik 26.9.0**. Six Yanosik patches, five universal patches.
+My shitty ass patches that are mostly vibed for apks / hell even the reamdme😭
 
 ## Get the patches
 
