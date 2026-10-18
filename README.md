@@ -4,7 +4,7 @@
 
 # Vibe Patch ☆
 
-My shitty ass patches that are mostly vibed for apks / hell even the reamdme😭
+My shitty ass patches that are mostly vibed for apks / hell even the readme😭
 
 ## Get the patches
 
